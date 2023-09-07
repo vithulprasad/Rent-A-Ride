@@ -4,6 +4,11 @@ import { useForm } from "react-hook-form";
 import { userApi } from "../../Apis/api";
 import { useNavigate } from "react-router-dom";
 import{toast} from 'react-hot-toast'
+import { useDispatch } from "react-redux";
+import { userDetails }  from'../../Redux/storeSlices/userAuth';
+
+
+
 
 function Login() {
 
@@ -13,6 +18,9 @@ function Login() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const {register, handleSubmit,formState: { errors },} = useForm();
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+
+
 
   const togglePasswordVisibility = () => {
     setPasswordVisible((prevState) => !prevState);
@@ -28,9 +36,10 @@ function Login() {
     setButton(false);
     setTimeout(() => {
       axios.post(`${userApi}loginUser`,{data:data}).then((res)=>{
-        console.log(res);
          if(res.data.success==true) {
           localStorage.setItem('information', JSON.stringify(res.data.obj));
+          let details = res.data.obj
+          dispatch(userDetails(details))
           navigate('/')
           toast.success(`welcome ${res.data.name}`)
       }else{

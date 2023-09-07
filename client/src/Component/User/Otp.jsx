@@ -45,10 +45,10 @@ const Otp = () => {
             setData("this otp is invalid please enter a valid otp");
           } else {
             Navigate("/login");
-            toast.success("Successfully toasted!");
+            toast.success("Registration has been successful");
           }
         });
-    }, 2000);
+    }, 1000);
   };
   // Focus on the first input field when the component mounts
   useEffect(() => {
