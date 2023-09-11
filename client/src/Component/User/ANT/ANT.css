@@ -32,3 +32,23 @@
     box-shadow: inset 0 -3em 3em rgba(0, 0, 0, 0.1),0 0 0 2px rgb(255, 255, 255),0.3em 0.3em 1em rgba(0, 0, 0, 0.3);
     margin-right: 21px;
 }
+:where(.css-dev-only-do-not-override-nnuwmp).ant-popconfirm .ant-popconfirm-buttons button {
+    margin-inline-start: 8px;
+    background: green;
+}
+:where(.css-dev-only-do-not-override-nnuwmp).ant-modal .ant-modal-footer .ant-btn+.ant-btn:not(.ant-dropdown-trigger) {
+    margin-bottom: 0;
+    margin-inline-start: 8px;
+    background: red;
+}
+:where(.css-dev-only-do-not-override-nnuwmp).ant-modal .ant-modal-content {
+    position: relative;
+    background-color: #ffffff;
+    background-clip: padding-box;
+    border: 0;
+    border-radius: 8px;
+    box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+    pointer-events: auto;
+    padding: 20px 24px;
+    width: 250px;
+}

@@ -27,8 +27,8 @@ function Register() {
     if(data.confirmPassword===data.password){
       setMatchPassword("")
       setButton(false);
-      setTimeout(()=>{
         axios.get(`${userApi}otpGenerate?data=${encodeURIComponent(data.email)}`).then((response)=>{
+          console.log("response id in register page:---",response.data);
            if(response.data.success==true){
             navigate('/otp',{state:{data}})
            }else{
@@ -36,10 +36,9 @@ function Register() {
             setButton(true)
            }
         })
-      },1000)
       setTimeout(()=>{
         setMatchPassword("")
-      },4000)
+      },3000)
     }else{
       setMatchPassword("password is not matching")
     }

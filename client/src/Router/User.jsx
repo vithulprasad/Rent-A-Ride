@@ -6,8 +6,8 @@ import { useDispatch } from "react-redux";
 import {useSelector} from "react-redux";
 import {userDetails} from '../Redux/storeSlices/userAuth';
 import Home from '../Pages/User/HomePage';
-import Register from '../Component/User/Register';
-import Login from '../Component/User/Login';
+import RegisterPage from '../Pages/User/RegisterPage';
+import LoginPage from '../Pages/User/login';
 import OtpPage from '../Pages/User/OtpPage';
 import Join from '../Pages/User/Join';
 import { useEffect } from 'react';
@@ -46,13 +46,14 @@ const dispatch = useDispatch()
             dispatch(userDetails(information))
           }
       } else {
-          console.log('No data found in localStorage for key "information"');
+          console.log('No data found in localStorage for key "information for the admin"');
       }
 
   },[])
   const user = useSelector((state) => {
-    return state?.userAuth.token
+    return !!state?.userAuth.token;
   });
+
  //###################################################### function end ####################################################################
 
   return (
@@ -68,17 +69,17 @@ const dispatch = useDispatch()
           <Route
             path="/register"
             exact
-            element={ !user ? <Register /> : <Home />}
+            element={<RegisterPage authorized={user} />}
           />
           <Route
             path="/login"
             exact
-            element={!user ? <Login /> : <Home />}
+            element={ <LoginPage authorized={user}  /> }
           />
           <Route
             path="/otp"
             exact
-            element={!user ?  <OtpPage /> : <Home />}
+            element={ <OtpPage authorized={user}  />}
           />
           <Route
             path="/joinCompany"

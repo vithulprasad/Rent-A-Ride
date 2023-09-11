@@ -1,69 +1,8 @@
 import React, { useState } from 'react';
-import {
-  AutoComplete,
-  Button,
-  Cascader,
-  Checkbox,
-  Col,
-  Form,
-  Input,
-  InputNumber,
-  Row,
-  Select,
-} from 'antd';
+import { Form, Input, Button, Select } from 'antd';
+
 const { Option } = Select;
-const residences = [
-  {
-    value: 'zhejiang',
-    label: 'Zhejiang',
-    children: [
-      {
-        value: 'hangzhou',
-        label: 'Hangzhou',
-        children: [
-          {
-            value: 'xihu',
-            label: 'West Lake',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    value: 'jiangsu',
-    label: 'Jiangsu',
-    children: [
-      {
-        value: 'nanjing',
-        label: 'Nanjing',
-        children: [
-          {
-            value: 'zhonghuamen',
-            label: 'Zhong Hua Men',
-          },
-        ],
-      },
-    ],
-  },
-];
-const formItemLayout = {
-  labelCol: {
-    xs: {
-      span: 24,
-    },
-    sm: {
-      span: 8,
-    },
-  },
-  wrapperCol: {
-    xs: {
-      span: 24,
-    },
-    sm: {
-      span: 16,
-    },
-  },
-};
+
 const tailFormItemLayout = {
   wrapperCol: {
     xs: {
@@ -76,11 +15,21 @@ const tailFormItemLayout = {
     },
   },
 };
-const FormJoinPartner = () => {
+
+const FormJoinComponent = ({ onFormSubmit }) => {
+  const [button, setButton] = useState(true);
+  // State to store form data
   const [form] = Form.useForm();
+
   const onFinish = (values) => {
-    console.log('Received values of form: ', values);
+    setButton(false);
+    if (onFormSubmit) {
+      onFormSubmit(values);
+    }
   };
+
+
+
   const prefixSelector = (
     <Form.Item name="prefix" noStyle>
       <Select
@@ -88,11 +37,12 @@ const FormJoinPartner = () => {
           width: 70,
         }}
       >
-        <Option value="86">+86</Option>
-        <Option value="87">+87</Option>
+        <Option value="86">+90</Option>
+        <Option value="87">+91</Option>
       </Select>
     </Form.Item>
   );
+
   const suffixSelector = (
     <Form.Item name="suffix" noStyle>
       <Select
@@ -105,7 +55,9 @@ const FormJoinPartner = () => {
       </Select>
     </Form.Item>
   );
+
   const [autoCompleteResult, setAutoCompleteResult] = useState([]);
+
   const onWebsiteChange = (value) => {
     if (!value) {
       setAutoCompleteResult([]);
@@ -113,15 +65,16 @@ const FormJoinPartner = () => {
       setAutoCompleteResult(['.com', '.org', '.net'].map((domain) => `${value}${domain}`));
     }
   };
+
   const websiteOptions = autoCompleteResult.map((website) => ({
     label: website,
     value: website,
   }));
+
   return (
     <Form
-      {...formItemLayout}
-      form={form}
       name="register"
+      form={form}
       onFinish={onFinish}
       initialValues={{
         residence: ['zhejiang', 'hangzhou', 'xihu'],
@@ -138,7 +91,7 @@ const FormJoinPartner = () => {
         rules={[
           {
             type: 'email',
-            message: 'The input is not valid E-mail!',
+            message: 'The input is not a valid E-mail!',
           },
           {
             required: true,
@@ -178,7 +131,7 @@ const FormJoinPartner = () => {
               if (!value || getFieldValue('password') === value) {
                 return Promise.resolve();
               }
-              return Promise.reject(new Error('The new password that you entered do not match!'));
+              return Promise.reject(new Error('The passwords do not match!'));
             },
           }),
         ]}
@@ -187,8 +140,8 @@ const FormJoinPartner = () => {
       </Form.Item>
 
       <Form.Item
-        name="nickname"
-        label="Nickname"
+        name="name"
+        label="Name"
         tooltip="What do you want others to call you?"
         rules={[
           {
@@ -202,17 +155,18 @@ const FormJoinPartner = () => {
       </Form.Item>
 
       <Form.Item
-        name="residence"
-        label="Habitual Residence"
+        name="State"
+        label="State"
+        tooltip="Please provide a state"
         rules={[
           {
-            type: 'array',
             required: true,
-            message: 'Please select your habitual residence!',
+            message: 'Please input your state!',
+            whitespace: true,
           },
         ]}
       >
-        <Cascader options={residences} />
+        <Input />
       </Form.Item>
 
       <Form.Item
@@ -225,58 +179,97 @@ const FormJoinPartner = () => {
           },
         ]}
       >
-        <Input
-          addonBefore={prefixSelector}
-          style={{
-            width: '100%',
-          }}
-        />
+        <Input addonBefore={prefixSelector} style={{ width: '100%' }} />
       </Form.Item>
 
       <Form.Item
-        name="donation"
-        label="Donation"
+        name="district"
+        label="District"
+        tooltip="What is your district?"
         rules={[
           {
             required: true,
-            message: 'Please input donation amount!',
+            message: 'Please input your district!',
+            whitespace: true,
           },
         ]}
       >
-        <InputNumber
-          addonAfter={suffixSelector}
-          style={{
-            width: '100%',
-          }}
-        />
+        <Input />
       </Form.Item>
 
       <Form.Item
-        name="website"
-        label="Website"
+        name="local_area"
+        label="Local Area"
+        tooltip="What is the local area?"
         rules={[
           {
             required: true,
-            message: 'Please input website!',
+            message: 'Please input your local area!',
+            whitespace: true,
           },
         ]}
       >
-        <AutoComplete options={websiteOptions} onChange={onWebsiteChange} placeholder="website">
-          <Input />
-        </AutoComplete>
+        <Input />
+      </Form.Item>
+
+
+      <Form.Item
+        name="post"
+        label="Post"
+        tooltip="enter your post area?"
+        rules={[
+          {
+            required: true,
+            message: 'Please input your Post!',
+            whitespace: true,
+          },
+        ]}
+      >
+        <Input />
       </Form.Item>
 
       <Form.Item
-        name="intro"
-        label="Intro"
+        name="pin"
+        label="Pin"
+        tooltip="What is the pin ?"
         rules={[
           {
             required: true,
-            message: 'Please input Intro',
+            message: 'Please input your PIN!',
+            whitespace: true,
           },
         ]}
       >
-        <Input.TextArea showCount maxLength={100} />
+        <Input />
+      </Form.Item>
+
+      <Form.Item
+        name="Age"
+        label="Age"
+        type="number"
+        tooltip="What is your age?"
+        rules={[
+          {
+            required: true,
+            message: 'Please input your age!',
+          },
+        ]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
+        name="CompanyName"
+        label="CompanyName"
+        tooltip="enter your post area?"
+        rules={[
+          {
+            required: true,
+            message: 'Please input your Post!',
+            whitespace: true,
+          },
+        ]}
+      >
+        <Input />
       </Form.Item>
 
       <Form.Item
@@ -285,60 +278,30 @@ const FormJoinPartner = () => {
         rules={[
           {
             required: true,
-            message: 'Please select gender!',
+            message: 'Please select your gender!',
           },
         ]}
       >
-        <Select placeholder="select your gender">
+        <Select placeholder="Select your gender">
           <Option value="male">Male</Option>
           <Option value="female">Female</Option>
           <Option value="other">Other</Option>
         </Select>
       </Form.Item>
 
-      <Form.Item label="Captcha" extra="We must make sure that your are a human.">
-        <Row gutter={8}>
-          <Col span={12}>
-            <Form.Item
-              name="captcha"
-              noStyle
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input the captcha you got!',
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Button>Get captcha</Button>
-          </Col>
-        </Row>
-      </Form.Item>
-
-      <Form.Item
-        name="agreement"
-        valuePropName="checked"
-        rules={[
-          {
-            validator: (_, value) =>
-              value ? Promise.resolve() : Promise.reject(new Error('Should accept agreement')),
-          },
-        ]}
-        {...tailFormItemLayout}
-      >
-        <Checkbox>
-          I have read the <a href="">agreement</a>
-        </Checkbox>
-      </Form.Item>
       <Form.Item {...tailFormItemLayout}>
-        <Button type="primary" htmlType="submit">
-          Register
-        </Button>
+        {button ? (
+          <Button className="bg-green-700" type="primary" htmlType="submit">
+            Register
+          </Button>
+        ) : (
+          <Button style={{ background: 'grey', color: 'white' }} disabled className="text-white bg-green-700" type="primary">
+            Processing.....
+          </Button>
+        )}
       </Form.Item>
     </Form>
   );
 };
-export default FormJoinPartner;
+
+export default FormJoinComponent;
