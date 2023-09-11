@@ -1,8 +1,10 @@
 const otpGenerate = require("otp-generator");
 const nodemailer = require("nodemailer");
 const users = require("../models/Users");
+const company = require("../models/Partner");
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt");
+const partner = require("../models/Partner");
 //---------------------------comparing otp and verify the email---------------------------//
 exports.otp = async (req, res) => {
   try {
@@ -42,16 +44,30 @@ exports.otpGenerate = async (req, res) => {
       let email = req.query.data;
       const find_email = await users.findOne({ email: email });
       console.log(find_email, "this is the found email");
+
+     
   
       if (find_email == null) {
-        console.log("generating otp");
-        let OTP = await otpGenerate.generate(6, {
-          lowerCaseAlphabets: false,
-          upperCaseAlphabets: false,
-          specialChars: false,
-        });
-        req.app.locals.OTP = OTP;
-        console.log("otp is ", OTP);
+        if(req.app.locals.resetSession===true ){
+          let OTP = await otpGenerate.generate(6, {
+            lowerCaseAlphabets: false,
+            upperCaseAlphabets: false,
+            specialChars: false,
+          });
+          req.app.locals.OTP = OTP;
+          console.log("resent otp is ", OTP);
+        }else{
+          let OTP = await otpGenerate.generate(6, {
+            lowerCaseAlphabets: false,
+            upperCaseAlphabets: false,
+            specialChars: false,
+          });
+          req.app.locals.OTP = OTP;
+          req.app.locals.resetSession = true;
+          console.log("first otp -  ", OTP);
+         
+        }
+     
   
         // sending to the client's email address
         const transporter = nodemailer.createTransport({
@@ -62,7 +78,7 @@ exports.otpGenerate = async (req, res) => {
             pass: process.env.PASS,
           },
         });
-  
+    
         const mailOptions = {
           from: process.env.EMAIL,
           to: req.query.data,
@@ -70,18 +86,20 @@ exports.otpGenerate = async (req, res) => {
           html:
             "<h3>OTP for account verification is </h3>" +
             "<h1 style='font-weight:bold;'>" +
-            OTP +
+            req.app.locals.OTP +
             "</h1>", // html body
         };
   
         transporter.sendMail(mailOptions, (error, info) => {
+          console.log("entering into the last stage of otp");
           if (error) {
             console.error(error);
           } else {
             console.log("Email sent: " + info.response);
+            console.log("sending response");
+            res.status(200).json({ success: true });
           }
         });
-        res.status(200).json({ success: true });
       } else {
         console.log("entering in to the email was found and it sent to the clint");
         res.status(200).json({ success: false });
@@ -101,7 +119,7 @@ exports.loginUser=async(req,res)=>{
                 const passwordMatch =  await bcrypt.compare(password,find_user_email.password);
                     if(passwordMatch){
                         if(find_user_email.role==="client"){
-                            //-----json wevToken creation------
+                            //-----json webToken creation------
                             const token = jwt.sign({ id: find_user_email._id }, process.env.TOKENSECRET, {
                                 expiresIn: "30d",
                               });
@@ -131,4 +149,45 @@ exports.loginUser=async(req,res)=>{
     } catch (error) {
         res.status(500).json()
     }
+}
+exports.companyRegistration=async(req,res)=>{
+  try {
+     const {email,password,confirm,name,State,phone,district,local_area,post,pin,Age,gender,CompanyName} =req.body.data
+     
+     const valid_for_applying = await company.findOne({email:email})
+        if(!valid_for_applying){
+         
+            const Address = {
+              district: district,
+              state: State,
+              localArea:local_area,
+              age:Age,
+              post:post,
+              pin:pin
+            }
+            const Partner = new partner({
+              name: name,
+              gender: gender,
+              phone: phone,
+              email: email,
+              password: password,
+              role: "partner",
+              address:Address,
+              company:CompanyName
+            });
+            await Partner
+              .save()
+              .then(() => {
+                res.status(200).json({ success: true ,email:email,name:name });
+              })
+              .catch((err) => {
+                console.log(err.message);
+                res.status(500).json({ success: false });
+              });
+        }else{
+          res.status(200).json({success:false,name:name})
+        }
+  } catch (error) {
+    console.log(error.message);
+  }
 }
