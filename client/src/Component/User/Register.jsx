@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from 'react-router-dom'
-import axios from "axios";
-import { userApi } from "../../Apis/api";
+import {otpGenerate} from '../../Apis/connections/user'
 function Register() {
  
 
@@ -23,11 +22,11 @@ function Register() {
     setPasswordVisible1((prevState) => !prevState);
   };
   //-------------------------------Form Data is submitted to backend  otp and email verify-----------------------//
-  const onSubmit = (data) => {
+  const onSubmit = async(data) => {
     if(data.confirmPassword===data.password){
       setMatchPassword("")
       setButton(false);
-        axios.get(`${userApi}otpGenerate?data=${encodeURIComponent(data.email)}`).then((response)=>{
+        await otpGenerate(data.email).then((response)=>{
           console.log("response id in register page:---",response.data);
            if(response.data.success==true){
             navigate('/otp',{state:{data}})
@@ -175,12 +174,18 @@ function Register() {
             </div>
 
             <div className="mt-4 relative mt-7">
-              <input
-                {...register("password", { required: true })}
+            <input
+                {...register("password", {
+                  required: true,
+                  pattern: {
+                    value: /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,}$/,
+                    message: "Password must be 8 characters long and contain at least one uppercase letter, one special character, and one number.",
+                  },
+                })}
                 id="password"
                 type={passwordVisible ? "text" : "password"}
                 name="password"
-                className="peer h-10   w-full border-2 px-2 border-gray-300 text-gray-900 placeholder-transparent focus:border-rose-600"
+                className="peer h-10 w-full border-2 px-2 border-gray-300 text-gray-900 placeholder-transparent focus:border-rose-600"
                 placeholder="Password"
               />
               <label
@@ -190,7 +195,7 @@ function Register() {
                 Password
               </label>
               {errors.password && (
-                <p className=" text-red-600">Password is required</p>
+                <p className="text-red-600">{errors.password.message}</p>
               )}
               <div
                 className="absolute right-5 top-2 cursor-pointer"

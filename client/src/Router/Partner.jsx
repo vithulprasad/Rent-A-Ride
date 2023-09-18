@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import{partnerDetails} from '../Redux/storeSlices/PartnerAuth'
 import Home from '../Pages/PartnerPage/HomePage'
 import Login from '../Pages/PartnerPage/LoginPage'
+import BikePage from '../Pages/PartnerPage/BikePage';
 function Partner() {
   const storedInformation = localStorage.getItem('partnerInformation');
   const dispatch = useDispatch()
@@ -32,6 +33,7 @@ function Partner() {
         <Routes>
                  <Route path='/' element={partner ? <Home/> : <Login/>}/>
                  <Route path='/login' element={partner ?<Home/> : <Login/>}/>
+                 <Route path='/bikeManage' element={partner ? <BikePage/> : <Login/>}/>
        </Routes>
     </div>
     </div>

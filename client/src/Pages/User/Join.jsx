@@ -7,9 +7,9 @@ import JoinComponent from '../../Component/User/JoinComponent'
 function Join(){
   return (
    <Fragment>
-       <Navbar />
-       <JoinComponent/>
-        <Footer/>
+      <Navbar />
+         <JoinComponent/>
+      <Footer/>
    </Fragment>
   )
 }

@@ -1,14 +1,13 @@
-import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { partnerApi } from "../../Apis/api";
 import { useDispatch } from "react-redux";
 import { partnerDetails } from "../../Redux/storeSlices/PartnerAuth";
+import { partnerLogin } from "../../Apis/connections/partner";
 import toast from "react-hot-toast";
 function Login() {
   // FOR HANDLING EYE VISIBILITY
   const [passwordVisible, setPasswordVisible] = useState(false);
-const dispatch=useDispatch()
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
@@ -18,17 +17,24 @@ const dispatch=useDispatch()
     setPasswordVisible((prevState) => !prevState);
   };
   //-------------------------------
-  const onSubmit = (data) => {
-          axios.post(`${partnerApi}partnerLogin`,{data:data}).then((res) => {
-                  if(res.data.success===true){
-                    const information = res.data.obj
-                    localStorage.setItem('partnerInformation', JSON.stringify(res.data.obj));
-                    dispatch(partnerDetails(information))
-                    toast.success(`come to rent a ride ${res.data.name} `)
-                  }else{
-                    toast.error('login failed provide valid information')
-                  }
-          })
+  const onSubmit = async (data) => {
+    await partnerLogin(data).then((res) => {
+      if (res.data.success === true) {
+        if (res.data.blocking === false) {
+          const information = res.data.obj;
+          localStorage.setItem(
+            "partnerInformation",
+            JSON.stringify(res.data.obj)
+          );
+          dispatch(partnerDetails(information));
+          toast.success(`come to rent a ride ${res.data.name} `);
+        } else {
+          toast.error("partner is blocked by Rent-A-Ride");
+        }
+      } else {
+        toast.error("login failed provide valid information");
+      }
+    });
   };
 
   // ####################################################################################################################################
@@ -47,7 +53,9 @@ const dispatch=useDispatch()
         />
 
         <div className="w-300" style={{ paddingLeft: "20px", width: "100%" }}>
-          <h2 className="text-2xl font-semibold text-center mb-4">Partner Login</h2>
+          <h2 className="text-2xl font-semibold text-center mb-4">
+            Partner Login
+          </h2>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="mt-4 relative mt-7">
               <input
@@ -116,7 +124,6 @@ const dispatch=useDispatch()
             </div>
 
             <div className="flex justify-between items-center mt-10">
-          
               <a
                 href="#"
                 className="inline-block text-blue-500 hover:text-blue-800 hover:underline"

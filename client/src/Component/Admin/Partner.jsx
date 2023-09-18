@@ -1,13 +1,14 @@
 import axios from "axios";
 import { useEffect, useState,Fragment} from "react";
 import { adminApi } from "../../Apis/api";
-
+import { Button, message, Popconfirm } from 'antd';
 
 import { Empty } from 'antd';
+import toast from "react-hot-toast";
 
 function Partner() {
   const [users, setUsers] = useState([]);
-
+const [block,setBlock]=useState(false);
 
   useEffect(() => {
     axios.get(`${adminApi}findPartner`).then((res) => {
@@ -15,13 +16,44 @@ function Partner() {
         setUsers(res.data.request);
       }
     });
-  }, []);
+  }, [block]);
  
   const handleBlocking=(email)=>{
-    console.log(email,'this is the emial')
+    axios.get(`${adminApi}partnerBlocking?data=${encodeURIComponent(email)}`).then((res)=>{
+      if(res.data.success===true){
+          if(res.data.blocking===true){
+            toast.success("blocking successfully")
+            setBlock(true)
+          }else{
+            toast.success("unblocked  successfully")
+            setBlock(false)
+          }
+       
+      }else{
+        toast.error("something went wrong")
+      }
+    })
   }
-
-
+  
+  const blocked = {
+    background: "red",    // Change to a different color
+    color: "white",
+    fontWeight: "bold",  // Change 'font' to 'fontWeight' and adjust value
+    borderRadius: "5px",
+    height:"35px",
+    width:"120px" 
+  };
+  
+  const unblock = {
+    background: "green",   // Change to a different color
+    color: "white",
+    fontWeight: "bold",  // Change 'font' to 'fontWeight' and adjust value
+    borderRadius: "5px",
+    height:"35px",
+    width:"120px" ,
+    display:"flex",
+    justifyContent:"center"// Change the borderRadius value
+  };
   return (
 <Fragment>
   { users.length > 0 ?
@@ -40,6 +72,9 @@ function Partner() {
             </th>
             <th scope="col" className="px-6 py-4 font-medium text-gray-900">
               Information
+            </th>
+            <th scope="col" className="px-6 py-4 font-medium text-gray-900">
+              product information
             </th>
             <th scope="col" className="px-6 text-center py-4 pr -0 font-medium text-gray-900">
               active /edit
@@ -81,10 +116,24 @@ function Partner() {
               </div>
             </td>
             <td className="px-6 py-4">
-              <div className="flex justify-end gap-4">
-              
-              <button  className="bg-green-500  text-white font-bold px-5 py-2 rounded focus:outline-none shadow hover:bg-green-900 transition-colors" onClick={()=>{handleBlocking(user.email)}}>Block</button>
+              <div className="flex gap-2">
+               <button className="bg-green-700  text-white font-bold px-5 py-2 rounded focus:outline-none shadow hover:bg-green-900 transition-colors">orderDetails</button>
               </div>
+            </td>
+            <td className="px-6 py-4">
+              <div className="flex justify-end gap-4">
+                <Popconfirm
+                title="Are you sure "
+                description="take action against the partner?"
+                onConfirm={() => handleBlocking(user.email)}
+                onCancel={()=>{message.error("cancelled")}}
+                okText="Yes"
+                cancelText="No"
+              >
+                  {user.blocking===false ?<Button style={unblock}>Block partner</Button>:<Button style={blocked}> <span style={{marginLeft:"-10px"}}>unBlock partner</span></Button>}
+              </Popconfirm>
+                       
+            </div>
             </td>
               </tr>
             ))

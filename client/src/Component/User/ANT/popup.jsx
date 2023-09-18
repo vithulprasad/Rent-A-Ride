@@ -49,7 +49,7 @@ const [popup,setPopup] = useState(false)
               logout();
             }}>Logout</button>
 
-            <button className="bg-blue-500  text-white font-bold px-5 py-2 rounded focus:outline-none shadow hover:bg-blue-700 transition-colors">View Profile</button>
+            <button className="bg-blue-500  text-white font-bold px-5 py-2 rounded focus:outline-none shadow hover:bg-blue-700 transition-colors" onClick={()=>{navigate('/profile')}}>View Profile</button>
           </div>
           <br />
 

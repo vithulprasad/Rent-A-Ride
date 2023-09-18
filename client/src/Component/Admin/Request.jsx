@@ -4,7 +4,7 @@ import { adminApi } from "../../Apis/api";
 import {toast} from 'react-hot-toast'
 import { Button, message, Popconfirm,Drawer,Form, Input ,Modal } from 'antd';
 import { Empty } from 'antd';
-import { useNavigate } from "react-router-dom";
+import PropTypes from 'prop-types';
 
 
 
@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 
 
 
-function Request() {
+function Request({sendDataToParent}) {
   const [open, setOpen] = useState(false);
   const [users, setUsers] = useState([]);
   const [refresh,setRefresh] = useState("")
@@ -29,7 +29,7 @@ function Request() {
         setUsers(res.data.request);
       }
     });
-  }, [refresh]);
+  }, [refresh,]);
  
 
   const handleAccept =(email)=>{
@@ -37,6 +37,7 @@ function Request() {
        if(res.data.success===true){
         setRefresh(res.data.email)
         toast.success(" requset accept new parter wer added")
+        sendDataToParent()
        }else{
         toast.error("something went wrong try again")
        }
@@ -48,6 +49,8 @@ function Request() {
           if(res.data.success===true){
              toast.success("partner request rejected successfully")
              setIsModalOpen(false)
+             sendDataToParent()
+             setRefresh('force refresh')
           }else{
             toast.error("something went wrong!")
           }
@@ -214,6 +217,10 @@ function Request() {
     </Fragment>
   );
 }
+Request.propTypes = {
+  sendDataToParent: PropTypes.func.isRequired,
+  authorized: PropTypes.bool.isRequired, 
+};
 
 export default Request;
 

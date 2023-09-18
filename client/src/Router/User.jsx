@@ -11,8 +11,8 @@ import LoginPage from '../Pages/User/login';
 import OtpPage from '../Pages/User/OtpPage';
 import Join from '../Pages/User/Join';
 import { useEffect } from 'react';
-
-
+import BikePage from '../Pages/User/bikePage';
+import ProfilePage from '../Pages/User/ProfilePage';
 // --------------------------------error boundery set up --------------------------------//
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -85,6 +85,16 @@ const dispatch = useDispatch()
             path="/joinCompany"
             exact
             element={<Join />}
+          />
+            <Route
+            path="/bikeCollection"
+            exact
+            element={<BikePage />}
+          />
+              <Route
+            path="/profile"
+            exact
+            element={<ProfilePage authorized={user} />}
           />
         </Routes>
       </ErrorBoundary>

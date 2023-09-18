@@ -1,12 +1,11 @@
-import axios from "axios";
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { adminApi } from "../../Apis/api";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import{adminDetails} from '../../Redux/storeSlices/AdminAuth'
 import { useNavigate } from "react-router-dom";
-
+import {login} from '../../Apis/connections/admin'
 
 function Login() {
   // FOR HANDLING EYE VISIBILITY
@@ -24,9 +23,9 @@ function Login() {
   };
  
   //-------------------------------
-  const onSubmit = (data) => {
+  const onSubmit = async(data) => {
     console.log(data,'------------------ submitting--------------');
-     axios.post(`${adminApi}login`,{data:data}).then((res)=>{
+     await login(data).then((res)=>{
       if(res.data.success===true){
         let information = res.data.obj
         console.log(information,"this is the data ");
