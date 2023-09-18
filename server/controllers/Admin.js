@@ -1,5 +1,7 @@
 const partner = require('../models/Partner')
 const admin = require('../models/Admin')
+const bikeModel = require('../models/BikeModel')
+const user = require('../models/Users')
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 const  jwt  = require('jsonwebtoken');
@@ -10,17 +12,14 @@ const  jwt  = require('jsonwebtoken');
 exports.login=async(req,res)=>{
      const {email,password}=req.body.data   
      
-console.log(email,password,'emal and password');
      const AdminFind = await admin.find()
        if(AdminFind.length>0){
         
             const verifyAdmin = await admin.findOne({email:email})
                if(verifyAdmin){
-                  console.log("email is currect");
                   const passwordMatch =  await bcrypt.compare(password,verifyAdmin.Password);
-                  console.log(passwordMatch);
                        if(passwordMatch){
-                        const token = jwt.sign({ id: verifyAdmin._id }, process.env.TOKENSECRET, {
+                        const token = jwt.sign({ id: verifyAdmin._id,role:"admin" }, process.env.TOKENSECRET, {
                            expiresIn: "30d",
                          });
                          const obj = {
@@ -60,7 +59,6 @@ exports.request=async(req,res)=>{
       let requested_partner = Partner.filter((res)=>{
              return res.requestStatus===false
       })
-      console.log(requested_partner,'this is the data----');
       res.status(200).json({success:true,request:requested_partner})
    } catch (error) {
       console.log(error.message);
@@ -104,6 +102,10 @@ exports.accessConfirmation=async(req,res)=>{
               console.error(error);
             } else {
               console.log("Email sent: " + info.response);
+              const find_user_is_sending_request=await user.findOne({email:email})
+               if(find_user_is_sending_request){
+                  await user.findOneAndUpdate({email:email},{$set:{isPartner:true}})
+               }
               const passwordHash = await bcrypt.hash(password,10)
               console.log("Password hash", passwordHash);
              await partner.findOneAndUpdate({email:email},{$set:{requestStatus:true,password:passwordHash}}).then((response)=>{
@@ -126,7 +128,6 @@ exports.findPartner=async(req,res)=>{
       let requested_partner = Partner.filter((res)=>{
              return res.requestStatus===true
       })
-      console.log(requested_partner,'this is the data----');
       res.status(200).json({success:true,request:requested_partner})
    } catch (error) {
       console.log(error.message);
@@ -135,7 +136,6 @@ exports.findPartner=async(req,res)=>{
 
 exports.rejected=async(req,res)=>{
    try {
-      console.log(req.body.data,'this is email',req.body.email);
       const information =req.body.data.information;
       const reason = req.body.data.reason
       const email = req.body.email
@@ -182,5 +182,87 @@ exports.rejected=async(req,res)=>{
        
    } catch (error) {
       console.log(error.message);
+   }
+}
+
+
+
+exports.partnerBlocking=async(req,res)=>{
+   try {
+      console.log(req.query.data);
+      const email = req.query.data
+      const Partner =await partner.findOne({email:email})
+      console.log(
+      "partner currently ",Partner.blocking
+      );
+      if(Partner){
+         if(Partner.blocking===false){
+            await partner.findOneAndUpdate({email:email},{$set:{blocking:true}})
+            res.json({success:true,blocking:true})
+         }else{
+            await partner.findOneAndUpdate({email:email},{$set:{blocking:false}})
+            res.status(200).json({success:true,blocking:false})
+         }
+         
+      }else{
+         res.status(200).json({success:false})
+      }
+   } catch (error) {
+      res.json({success:false})
+      console.log(error.message);
+   }
+}
+
+
+exports.userDetails=async(req,res)=>{
+   try {
+        const userDetails =await user.find()
+        res.status(200).json({success:true,userData:userDetails})
+   } catch (error) {
+      res.status(200).json({success:false})
+      console.log(error.message);
+   }
+}
+
+exports.userBlocking=async(req,res)=>{
+   try {
+      const data = req.query.email
+       const userNow = await user.findOne({email:data})
+        if(userNow.blocking===false){
+            await user.findOneAndUpdate({email:data},{$set:{blocking:true}}).then(()=>{
+               res.status(200).json({success:true,blockedUser:true})
+            })
+            .catch((error)=>{
+               console.log(error.message);
+               res.status(200).json({success:false});
+            })
+        }else{
+         await user.findOneAndUpdate({email:data},{$set:{blocking:false}}).then(()=>{
+            res.status(200).json({success:true,blockedUser:false})
+         })
+         .catch((error)=>{
+            console.log(error.message);
+            res.status(200).json({success:false});
+         })
+        }
+       
+   } catch (error) {
+      console.log(error.message)
+      res.status(200).json({success:false});
+   }
+}
+
+exports.bikeDetails=async(req,res)=>{
+   try {
+      const bikes = await bikeModel.find().populate('partnerId')
+      if(bikes){
+         res.status(200).json({success:true,bikes:bikes})
+      }else{
+         res.status(200).json({success:false})
+      }
+
+   } catch (error) {
+      console.log(error.message);
+      res.status(200).json({success:false});
    }
 }

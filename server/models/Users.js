@@ -52,11 +52,10 @@ const user = mongoose.Schema({
     },
 //---------------------------------true false value checker-----------------------------//
 
-isTrue:{
+isPartner:{
     type:Boolean,
-    default:true
+    default:false
 }
-
 })
 
 module.exports = mongoose.model("user",user)

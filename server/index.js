@@ -21,25 +21,30 @@ mongoose.connect('mongodb://127.0.0.1:27017/Rent-A-Ride',{
   console.log(error);
 })
 
+
+app.use(cors());
+
+
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 
 
-app.use(
-    cors({
-      origin: "http://localhost:3000/",
-      methods: ["GET", "POST"],
-      credentials: true,
-    })
-  );
-  app.options(
-    "*",
-    cors({
-      allowedHeaders: ["Content-Type"],
-    })
-  );
-  
+// app.use(
+//     cors({
+//       origin: "http://localhost:3000/",
+//       methods: ["GET", "POST"],
+//       credentials: true,
+//     })
+//   );
+//   app.options(
+//     "*",
+//     cors({
+//       allowedHeaders: ["Content-Type"],
+//     })
+//   );
+
+  // app.use(cors(corsOpts));
 
   console.log("starting");
   app.use("/",user_route);

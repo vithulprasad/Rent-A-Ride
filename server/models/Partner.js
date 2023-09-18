@@ -75,10 +75,11 @@ const partner = mongoose.Schema({
     },
 //---------------------------------true false value checker-----------------------------//
 
-isTrue:{
+isClient:{
     type:Boolean,
-    default:true
-}
+    default:false
+},
+
 
 })
 

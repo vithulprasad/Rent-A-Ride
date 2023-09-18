@@ -5,6 +5,7 @@ const company = require("../models/Partner");
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt");
 const partner = require("../models/Partner");
+const BikeModel = require('../models/BikeModel')
 //---------------------------comparing otp and verify the email---------------------------//
 exports.otp = async (req, res) => {
   try {
@@ -23,7 +24,12 @@ exports.otp = async (req, res) => {
       });
       await user
         .save()
-        .then(() => {
+        .then(async() => {
+          const find_is_partner = await partner.findOne({email:email})
+          if(find_is_partner){
+               await users.findOneAndUpdate({email:email},{$set:{isPartner:true}})
+               await partner.findOneAndUpdate({email:email},{$set:{isClient:true}})
+          }
           res.status(200).json({ success: true });
         })
         .catch((err) => {
@@ -43,10 +49,6 @@ exports.otpGenerate = async (req, res) => {
     try {
       let email = req.query.data;
       const find_email = await users.findOne({ email: email });
-      console.log(find_email, "this is the found email");
-
-     
-  
       if (find_email == null) {
         if(req.app.locals.resetSession===true ){
           let OTP = await otpGenerate.generate(6, {
@@ -120,7 +122,7 @@ exports.loginUser=async(req,res)=>{
                     if(passwordMatch){
                         if(find_user_email.role==="client"){
                             //-----json webToken creation------
-                            const token = jwt.sign({ id: find_user_email._id }, process.env.TOKENSECRET, {
+                            const token = jwt.sign({ id: find_user_email._id,role:"client"}, process.env.TOKENSECRET, {
                                 expiresIn: "30d",
                               });
                               const obj = {
@@ -177,7 +179,11 @@ exports.companyRegistration=async(req,res)=>{
             });
             await Partner
               .save()
-              .then(() => {
+              .then(async() => {
+                const check_is_client = await users.findOne({email:email})
+                if(check_is_client){
+                  await company.findOneAndUpdate({email:email},{$set:{isClient:true}})
+                }
                 res.status(200).json({ success: true ,email:email,name:name });
               })
               .catch((err) => {
@@ -189,5 +195,63 @@ exports.companyRegistration=async(req,res)=>{
         }
   } catch (error) {
     console.log(error.message);
+  }
+}
+exports.navDetails=async(req,res)=>{
+     try {
+         const token = req.query.data
+         const verifyToken = jwt.verify(token,process.env.TOKENSECRET)
+         const userId = verifyToken.id
+         if(userId){
+           const findUser = await users.findOne({_id:userId})
+           const user = findUser.isPartner
+           if(user===true){
+             res.status(200).json({success:true,userData:true})
+           }else{
+            console.log("data was not found");
+             res.status(200).json({success:true,userData:false})
+           }
+          
+         }else{
+          res.status(200).json({success:false})
+         }
+         
+     } catch (error) {
+      console.log(error.message);
+      res.status(200).json({success:false})
+     }
+}
+exports.googleAuthentication=async(req,res)=>{
+  try {
+    const user = req.body.data
+    const findUser = await users.findOne({email:user})
+    if(findUser){
+      const token = jwt.sign({ id: findUser._id,role:"client" }, process.env.TOKENSECRET, {
+        expiresIn: "30d",
+      });
+      const obj = {
+        token,
+        name: findUser.firstName+" "+findUser.lastName,
+        id: findUser._id,
+        roll:"client"
+      };
+      res.status(200).json({obj,success:true,name:findUser.firstName+" "+findUser.lastName})
+    }else{
+      res.status(200).json({success:false})
+    }
+   
+  } catch (error) {
+    console.log(error.message);
+    res.status(200).json({success:false})
+  }
+}
+
+exports.getBikeInformation=async(req,res)=>{
+  try {
+      const bikes = await BikeModel.find();
+      res.status(200).json({success:true,bikes:bikes})
+  } catch (error) {
+    console.log(error.message);
+    res.status(200).json({success:false});
   }
 }
