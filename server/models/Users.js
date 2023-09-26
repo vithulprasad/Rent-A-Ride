@@ -33,22 +33,38 @@ const user = mongoose.Schema({
     },
 
     // ---------------------image handling ----------------------//
-    image:{
-        type:String,  
+    Profile:{
+        type:String,
+        default:''  
     },
-    informationImage:{
-        License:{
-            type:String
+    license:{
+        front:{
+            type:String,
+            default:''  
         },
-        verifyUser:{
-            frontSide:{
-                type:String
-            },
-            backSide:{
-                type:String
-            }
-
+        back:{
+            type:String,
+            default:''  
         }
+    },
+
+    userInfo:{
+        front:{
+            type:String,
+            default:''  
+        },
+        back:{
+            type:String,
+            default:''  
+        }
+    },
+    address:{
+        district:{type:String},
+        state:{type:String},
+        localArea:{type:String},
+        age:{type:Number},
+        post:{type:String},
+        pin:{type:Number}
     },
 //---------------------------------true false value checker-----------------------------//
 

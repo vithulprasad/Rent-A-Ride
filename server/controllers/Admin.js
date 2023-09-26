@@ -14,7 +14,7 @@ exports.login=async(req,res)=>{
      
      const AdminFind = await admin.find()
        if(AdminFind.length>0){
-        
+          console.log(AdminFind);
             const verifyAdmin = await admin.findOne({email:email})
                if(verifyAdmin){
                   const passwordMatch =  await bcrypt.compare(password,verifyAdmin.Password);
@@ -25,7 +25,7 @@ exports.login=async(req,res)=>{
                          const obj = {
                            token,
                            email: email,
-                           roll:"admin"
+                           role:"admin"
                          }; 
                         res.status(200).json({success:true,obj:obj})
                        }else{
@@ -136,9 +136,10 @@ exports.findPartner=async(req,res)=>{
 
 exports.rejected=async(req,res)=>{
    try {
-      const information =req.body.data.information;
-      const reason = req.body.data.reason
-      const email = req.body.email
+      
+      const information =req.body.data.data.information;
+      const reason = req.body.data.data.reason
+      const email = req.body.data.email
       const Part =await partner.findOne({email:email})
       if(Part.access==="requesting"){
          const transporter = nodemailer.createTransport({
@@ -261,6 +262,20 @@ exports.bikeDetails=async(req,res)=>{
          res.status(200).json({success:false})
       }
 
+   } catch (error) {
+      console.log(error.message);
+      res.status(200).json({success:false});
+   }
+}
+
+exports.partnerBikeReject=async(req,res)=>{
+   try {
+      const{bikeId,message,type}= req.body.data;
+      const update = await bikeModel.findOneAndUpdate({_id:bikeId},{$set:{
+         requestStatus:type,reason:message
+      }})
+      res.status(200).json({success:true})
+      
    } catch (error) {
       console.log(error.message);
       res.status(200).json({success:false});

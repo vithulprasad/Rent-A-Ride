@@ -54,6 +54,21 @@ const bikes = mongoose.Schema({
      },
      locations:{
       type:Array,
+     },
+     requestStatus:{
+      type:String,
+      default:"requested"
+     },
+     reason:{
+      type:String
+     },
+     requesting:{
+      type:Boolean,
+      default:false
+     },
+     isComplete:{
+       type:Boolean,
+       default:false
      }
      
 })

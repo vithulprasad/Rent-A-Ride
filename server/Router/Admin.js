@@ -1,14 +1,17 @@
 const express = require ('express');
 const adminController = require('../controllers/Admin');
 const admin_route = express();
+const Auth = require('../MiddleWare/AdminMIddleware/adminAuth')
 
 admin_route.post('/login',adminController.login)
-admin_route.get('/request',adminController.request)
-admin_route.get('/accessConfirmation',adminController.accessConfirmation)
-admin_route.get('/findPartner',adminController.findPartner)
-admin_route.post('/rejected',adminController.rejected)
-admin_route.get('/partnerBlocking',adminController.partnerBlocking)
-admin_route.get('/userDetails',adminController.userDetails)
-admin_route.get('/userBlocking',adminController.userBlocking)
-admin_route.get('/bikeDetails',adminController.bikeDetails)
+
+admin_route.get('/request',Auth.AdminAuth,adminController.request)
+admin_route.get('/accessConfirmation',Auth.AdminAuth,adminController.accessConfirmation)
+admin_route.get('/findPartner',Auth.AdminAuth,adminController.findPartner)
+admin_route.post('/rejected',Auth.AdminAuth,adminController.rejected)
+admin_route.get('/partnerBlocking',Auth.AdminAuth,adminController.partnerBlocking)
+admin_route.get('/userDetails',Auth.AdminAuth,adminController.userDetails)
+admin_route.get('/userBlocking',Auth.AdminAuth,adminController.userBlocking)
+admin_route.get('/bikeDetails',Auth.AdminAuth,adminController.bikeDetails)
+admin_route.post('/partnerBikeReject',Auth.AdminAuth,adminController.partnerBikeReject)
 module.exports = admin_route;

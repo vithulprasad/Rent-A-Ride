@@ -61,24 +61,19 @@ const partner = mongoose.Schema({
 
     // ---------------------image handling ----------------------//
     image:{
-        type:String,  
+        type:String, 
+        default:'' 
     },
-    informationImage:{
-        License:{
-            front:{type:String},
-            backSide:{type:String}
-        },
-        verifyUser:{
-            frontSide:{type:String},
-            backSide:{type:String}
-        }
-    },
+  
 //---------------------------------true false value checker-----------------------------//
 
 isClient:{
     type:Boolean,
     default:false
 },
+locationPoints:{
+    type:Array
+}
 
 
 })
