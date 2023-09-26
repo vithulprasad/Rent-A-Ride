@@ -1,20 +1,21 @@
 import { Input, InputNumber, Select,Spin,Space } from "antd";
 import { FieldTimeOutlined, FireOutlined } from "@ant-design/icons";
-import {  useState } from "react";
+import {  useEffect, useState } from "react";
 import PropTypes from 'prop-types';
-import { partnerApi } from "../../Apis/api";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
-
-
-
+import {  Typography } from 'antd';
+import {locationDetails}from '../../Apis/connections/partner'
+import {AddBikes}from '../../Apis/connections/partner'
 
 function AddBike({onDataReceived}) {
   const [dataToSend, setDataToSend] = useState("false");
   const { Option } = Select;
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const [miniLocation ,setMiniLocation] =useState([])
+  const [addLocation,setAddLocation] = useState()
 
   // Form model to store field values
   const [formValues, setFormValues] = useState({
@@ -55,6 +56,15 @@ function AddBike({onDataReceived}) {
     setFormValues(e.target);
     let currentIndex = 0;
     const formData = new FormData();
+    console.log(formValues);
+
+    if(formValues.bikeBrand=="" || formValues.bikeCC == null || formValues.bikeCategory=="" || formValues.bikeName=="" || formValues.plateNumber=="" || formValues.rentPerHour== null){
+      toast.error("please complete the filling");
+      setUploading(false);
+    }
+ 
+
+
     const uploadImage = async () => {
       if (currentIndex < files.length) {
         formData.append("file", files[currentIndex]);
@@ -71,15 +81,15 @@ function AddBike({onDataReceived}) {
           image.push(imageUrl);
           currentIndex++;
           if (currentIndex === files.length) {
-            axios
-              .post(`${partnerApi}AddBike`, { data: formValues, image: image, partner: partner })
+            const datas={data: formValues, image: image, partner: partner,locations:addLocation}
+            await AddBikes(datas)
               .then((res) => {
                 if (res.data.success === true) {
                   setUploading(false);
                     setDataToSend("false");
                     onDataReceived(dataToSend);
                   setUploading(false);
-                  toast.success("Product successfully uploaded");
+                  toast.success("Bike added to verifications ");
                 } else {
                   toast.error("something went wrong");
                 }
@@ -97,6 +107,23 @@ function AddBike({onDataReceived}) {
     await uploadImage();
   };
   
+
+
+  useEffect(()=>{
+    const miniLocations = async()=>{
+        await locationDetails(partner) 
+        .then((res)=>{
+          if(res.data.success){
+            setMiniLocation(res.data.location)
+          }else{  
+            toast.error('something went wrong with location')
+          }
+        })
+        .catch((err)=>{toast.error(`${err.message}`)})
+    }
+    miniLocations()
+  },[])
+
   // ----------------------------------------form submission end ----------------------------------------//
   const handleFieldChange = (e) => {
     const { id, value } = e.target;
@@ -106,6 +133,26 @@ function AddBike({onDataReceived}) {
   const handleNumberFieldChange = (id, value) => {
     setFormValues({ ...formValues, [id]: value });
   };
+
+
+  const { Title } = Typography;
+  const options = [];
+  for (let i = 0; i < miniLocation.length; i++) {
+    const value =miniLocation[i];
+    options.push({
+      label: value,
+      value,
+      disabled: i === 10,
+    });
+  }
+ 
+  const handleChange = (value) => {
+    setAddLocation(value)
+  };
+
+
+
+
 
   return (
     <>
@@ -126,13 +173,13 @@ function AddBike({onDataReceived}) {
 
 <div className="w-[700px] flex justify-center mt-10">
 <div
-  className="w-[500px]  p-4 rounded"
+  className="w-[500px] h-[830px]  rounded"
   style={{
     boxShadow:
       "inset 0 -3em 3em rgba(0, 0, 0, 0.1), 0 0 0 2px rgb(255, 255, 255), 0.3em 0.3em 1em rgba(0, 0, 0, 0.3)",
   }}
 >
-  <form onSubmit={handleSubmit}>
+  <form onSubmit={handleSubmit} className="p-3">
     <div
       className="h-[70px] bg-cyan-500 rounded"
       style={{
@@ -221,7 +268,7 @@ function AddBike({onDataReceived}) {
         onChange={handleFieldChange}
       />
     </div>
-    <div className="h-[150px] pt-5">
+    <div className="h-[70px] pt-5">
       <label
         className="block mb-2 text-sm font-medium text-gray-900 dark:text-black"
         htmlFor="multiple_files"
@@ -237,10 +284,29 @@ function AddBike({onDataReceived}) {
         onChange={handleImage}
       />
     </div>
+    <div className="h-[70px] ">
+      <label
+        className="block mb-2 text-sm font-medium text-gray-900 dark:text-black"
+        htmlFor="multiple_files"
+      >
+        
+      </label>
+      <Title level={5}>select locations</Title>
+        <Select
+          mode="multiple"
+          style={{
+            width: '100%',
+          }}
+          placeholder="Please select"
+          defaultValue={[]}
+          onChange={handleChange}
+          options={options}
+        />
+    </div>
 
     <div className="flex justify-center">
       <button
-        className="bg-green-600 h-14 text-white font-bold px-16 py-2 rounded focus:outline-none shadow hover:bg-green-900 transition-colors"
+        className="bg-green-600  text-white font-bold px-16 py-2 rounded focus:outline-none mt-28 shadow hover:bg-green-900 transition-colors"
         type="submit"
       >
         Add Bike Now

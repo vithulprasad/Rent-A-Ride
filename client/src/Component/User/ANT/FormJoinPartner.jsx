@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Form, Input, Button, Select } from 'antd';
+import { useState, useRef } from 'react';
+import { PlusOutlined } from '@ant-design/icons';
+import { Form, Input, Button, Select, Space, Divider } from 'antd';
 
 const { Option } = Select;
 
@@ -18,17 +19,27 @@ const tailFormItemLayout = {
 
 const FormJoinComponent = ({ onFormSubmit }) => {
   const [button, setButton] = useState(true);
-  // State to store form data
   const [form] = Form.useForm();
 
-  const onFinish = (values) => {
-    setButton(false);
-    if (onFormSubmit) {
-      onFormSubmit(values);
-    }
+  const [items, setItems] = useState([]);
+  const [selectedLocations, setSelectedLocations] = useState([]);
+  const [name, setName] = useState('');
+  const inputRef = useRef(null);
+
+  const onNameChange = (event) => {
+    setName(event.target.value);
   };
 
-
+  const addItem = (e) => {
+    e.preventDefault();
+    const newItem = name || `New item ${items.length + 1}`;
+    setItems([...items, newItem]);
+    setSelectedLocations([...selectedLocations, newItem]);
+    setName('');
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
+  };
 
   const prefixSelector = (
     <Form.Item name="prefix" noStyle>
@@ -43,19 +54,6 @@ const FormJoinComponent = ({ onFormSubmit }) => {
     </Form.Item>
   );
 
-  const suffixSelector = (
-    <Form.Item name="suffix" noStyle>
-      <Select
-        style={{
-          width: 70,
-        }}
-      >
-        <Option value="USD">$</Option>
-        <Option value="CNY">¥</Option>
-      </Select>
-    </Form.Item>
-  );
-
   const [autoCompleteResult, setAutoCompleteResult] = useState([]);
 
   const onWebsiteChange = (value) => {
@@ -66,10 +64,12 @@ const FormJoinComponent = ({ onFormSubmit }) => {
     }
   };
 
-  const websiteOptions = autoCompleteResult.map((website) => ({
-    label: website,
-    value: website,
-  }));
+  const onFinish = (values) => {
+    setButton(false);
+    if (onFormSubmit) {
+      onFormSubmit({ ...values, selectedLocations });
+    }
+  };
 
   return (
     <Form
@@ -289,13 +289,57 @@ const FormJoinComponent = ({ onFormSubmit }) => {
         </Select>
       </Form.Item>
 
+      <Divider />
+      <h1>Add Locations</h1>
+      <Select
+        style={{
+          width: 300,
+        }}
+        placeholder="Current location for the users"
+        dropdownRender={(menu) => (
+          <>
+            {menu}
+            <Divider
+              style={{
+                margin: '8px 0',
+              }}
+            />
+            <Space
+              style={{
+                padding: '0 8px 4px',
+              }}
+            >
+              <Input
+                placeholder="Please enter item"
+                ref={inputRef}
+                value={name}
+                onChange={onNameChange}
+              />
+              <Button type="text" icon={<PlusOutlined />} onClick={addItem}>
+                Add item
+              </Button>
+            </Space>
+          </>
+        )}
+        options={items.map((item, index) => ({
+          label: item,
+          value: item,
+          key: index,
+        }))}
+      />
+
       <Form.Item {...tailFormItemLayout}>
         {button ? (
           <Button className="bg-green-700" type="primary" htmlType="submit">
             Register
           </Button>
         ) : (
-          <Button style={{ background: 'grey', color: 'white' }} disabled className="text-white bg-green-700" type="primary">
+          <Button
+            style={{ background: 'grey', color: 'white' }}
+            disabled
+            className="text-white bg-green-700"
+            type="primary"
+          >
             Processing.....
           </Button>
         )}

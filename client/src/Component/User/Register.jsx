@@ -1,58 +1,54 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from 'react-router-dom'
-import {otpGenerate} from '../../Apis/connections/user'
+import { useNavigate } from "react-router-dom";
+import { otpGenerate } from "../../Apis/connections/user";
 function Register() {
- 
-
   //------------------------------------------------------ FOR HANDLING EYE VISIBILITY------------------------------------//
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordVisible1, setPasswordVisible1] = useState(false);
-  const [button,setButton]= useState(true)
-  const [matchPassword,setMatchPassword] = useState("");
-  const {register, handleSubmit,formState: { errors },} = useForm();
-  const navigate = useNavigate()
-
+  const [button, setButton] = useState(true);
+  const [matchPassword, setMatchPassword] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
     setPasswordVisible((prevState) => !prevState);
-    
   };
   const togglePasswordVisibility1 = () => {
     setPasswordVisible1((prevState) => !prevState);
   };
   //-------------------------------Form Data is submitted to backend  otp and email verify-----------------------//
-  const onSubmit = async(data) => {
-    if(data.confirmPassword===data.password){
-      setMatchPassword("")
+  const onSubmit = async (data) => {
+    if (data.confirmPassword === data.password) {
+      setMatchPassword("");
       setButton(false);
-        await otpGenerate(data.email).then((response)=>{
-          console.log("response id in register page:---",response.data);
-           if(response.data.success==true){
-            navigate('/otp',{state:{data}})
-           }else{
-            setMatchPassword("email is already in use")
-            setButton(true)
-           }
-        })
-      setTimeout(()=>{
-        setMatchPassword("")
-      },3000)
-    }else{
-      setMatchPassword("password is not matching")
+      await otpGenerate(data.email).then((response) => {
+        console.log("response id in register page:---", response.data);
+        if (response.data.success == true) {
+          navigate("/otp", { state: { data } });
+        } else {
+          setMatchPassword("email is already in use");
+          setButton(true);
+        }
+      });
+      setTimeout(() => {
+        setMatchPassword("");
+      }, 3000);
+    } else {
+      setMatchPassword("password is not matching");
     }
   };
   const isNoSpaces = (value) => !/\s/.test(value);
   const isNoSpaces1 = (value) => !/\s/.test(value);
 
-
-
-
   // ###########################################################end function #########################################################################
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      
       <div
         style={{ width: "1000px" }}
         className="bg-white p-8 rounded shadow-md flex w-900 h-200  relative"
@@ -65,7 +61,9 @@ function Register() {
         />
 
         <div className="w-300" style={{ paddingLeft: "20px", width: "100%" }}>
-        <h4 className="text-center text-red-600 font-sans">{matchPassword}</h4>
+          <h4 className="text-center text-red-600 font-sans">
+            {matchPassword}
+          </h4>
           <h2 className="text-2xl font-semibold text-center mb-4">Register</h2>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="mt-4 relative">
@@ -96,8 +94,6 @@ function Register() {
               )}
             </div>
 
-
-            
             <div className="mt-4 relative mt-7">
               <input
                 {...register("lastName", {
@@ -138,7 +134,10 @@ function Register() {
                 className="peer h-10   w-full border-2 px-2 border-gray-300 text-gray-900 placeholder-transparent focus:border-rose-600"
                 placeholder="Phone Number"
               />
-              <label htmlFor="phone" className="px-2 absolute left-0 -top-6 text-black-600 transition-all peer-placeholder-shown:text-gray-800 peer-placeholder-shown:top-2 peer-focus:-top-6  peer-focus:text-black-600 peer-focus:text-lg">
+              <label
+                htmlFor="phone"
+                className="px-2 absolute left-0 -top-6 text-black-600 transition-all peer-placeholder-shown:text-gray-800 peer-placeholder-shown:top-2 peer-focus:-top-6  peer-focus:text-black-600 peer-focus:text-lg"
+              >
                 Phone Number
               </label>
               {errors.phone && errors.phone.type === "required" && (
@@ -158,12 +157,14 @@ function Register() {
                   pattern: /^\S+@\S+$/i,
                 })}
                 id="email"
-                
                 name="email"
                 className="peer h-10   w-full border-2 px-2 border-gray-300 text-gray-900 placeholder-transparent focus:border-rose-600"
                 placeholder="E-mail" // Corrected placeholder text
               />
-              <label htmlFor="email" className="px-2 absolute left-0 -top-6 text-black-600 transition-all peer-placeholder-shown:text-gray-800 peer-placeholder-shown:top-2 peer-focus:-top-6  peer-focus:text-black-600 peer-focus:text-lg">
+              <label
+                htmlFor="email"
+                className="px-2 absolute left-0 -top-6 text-black-600 transition-all peer-placeholder-shown:text-gray-800 peer-placeholder-shown:top-2 peer-focus:-top-6  peer-focus:text-black-600 peer-focus:text-lg"
+              >
                 E-mail
               </label>
               {errors.email && (
@@ -174,12 +175,14 @@ function Register() {
             </div>
 
             <div className="mt-4 relative mt-7">
-            <input
+              <input
                 {...register("password", {
                   required: true,
                   pattern: {
-                    value: /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,}$/,
-                    message: "Password must be 8 characters long and contain at least one uppercase letter, one special character, and one number.",
+                    value:
+                      /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,}$/,
+                    message:
+                      "Password must be 8 characters long and contain at least one uppercase letter, one special character, and one number.",
                   },
                 })}
                 id="password"
@@ -211,7 +214,7 @@ function Register() {
 
             <div className="mt-4 relative mt-7">
               <input
-              {...register("confirmPassword", { required: true })}
+                {...register("confirmPassword", { required: true })}
                 id="confirmPassword"
                 type={passwordVisible1 ? "text" : "password"}
                 name="confirmPassword"
@@ -241,24 +244,29 @@ function Register() {
 
             <div className="flex justify-between items-center mt-10">
               <a
-                onClick={()=>{navigate('/login')}}
+                onClick={() => {
+                  navigate("/login");
+                }}
                 className="inline-block text-blue-500 hover:text-blue-800 hover:underline"
               >
                 Login
               </a>
-              {button ?  <button
-                type="submit"
-                className="bg-blue-500  text-white font-bold px-5 py-2 rounded focus:outline-none shadow hover:bg-blue-700 transition-colors"
-              >
-                Submit
-              </button>: <button
-                disabled
-                type="submit"
-                className="bg-blue-500  text-white font-bold px-5 py-2 rounded focus:outline-none shadow hover:bg-blue-700 transition-colors"
-              >
-                Processing...
-              </button>}
-             
+              {button ? (
+                <button
+                  type="submit"
+                  className="bg-blue-500  text-white font-bold px-5 py-2 rounded focus:outline-none shadow hover:bg-blue-700 transition-colors"
+                >
+                  Submit
+                </button>
+              ) : (
+                <button
+                  disabled
+                  type="submit"
+                  className="bg-blue-500  text-white font-bold px-5 py-2 rounded focus:outline-none shadow hover:bg-blue-700 transition-colors"
+                >
+                  Processing...
+                </button>
+              )}
             </div>
           </form>
         </div>
@@ -267,4 +275,4 @@ function Register() {
   );
 }
 
-export default Register
+export default Register;

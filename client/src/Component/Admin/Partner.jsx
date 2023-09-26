@@ -1,7 +1,8 @@
-import axios from "axios";
+
 import { useEffect, useState,Fragment} from "react";
-import { adminApi } from "../../Apis/api";
 import { Button, message, Popconfirm } from 'antd';
+import {findPartner} from '../../Apis/connections/admin'
+import {partnerBlocking} from '../../Apis/connections/admin'
 
 import { Empty } from 'antd';
 import toast from "react-hot-toast";
@@ -11,7 +12,7 @@ function Partner() {
 const [block,setBlock]=useState(false);
 
   useEffect(() => {
-    axios.get(`${adminApi}findPartner`).then((res) => {
+    findPartner().then((res) => {
       if (res.data.success === true) {
         setUsers(res.data.request);
       }
@@ -19,7 +20,7 @@ const [block,setBlock]=useState(false);
   }, [block]);
  
   const handleBlocking=(email)=>{
-    axios.get(`${adminApi}partnerBlocking?data=${encodeURIComponent(email)}`).then((res)=>{
+    partnerBlocking(email).then((res)=>{
       if(res.data.success===true){
           if(res.data.blocking===true){
             toast.success("blocking successfully")

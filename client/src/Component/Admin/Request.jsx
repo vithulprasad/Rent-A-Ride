@@ -1,13 +1,12 @@
-import axios from "axios";
+
 import { useEffect, useState,Fragment} from "react";
-import { adminApi } from "../../Apis/api";
 import {toast} from 'react-hot-toast'
 import { Button, message, Popconfirm,Drawer,Form, Input ,Modal } from 'antd';
 import { Empty } from 'antd';
 import PropTypes from 'prop-types';
-
-
-
+import {RequestDetails} from '../../Apis/connections/admin'
+import {accessConfirmation} from '../../Apis/connections/admin'
+import {rejectedNow} from '../../Apis/connections/admin'
 
 
 
@@ -23,17 +22,21 @@ function Request({sendDataToParent}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [email,setEmail] = useState('')
   const [form] = Form.useForm();
+  const [messageApi, contextHolder] = message.useMessage();
+
   useEffect(() => {
-    axios.get(`${adminApi}request`).then((res) => {
+    RequestDetails().then((res) => {
       if (res.data.success === true) {
         setUsers(res.data.request);
+      }else{
+        toast.success('something went wrong')
       }
     });
   }, [refresh,]);
  
 
   const handleAccept =(email)=>{
-     axios.get(`${adminApi}accessConfirmation?email=${encodeURIComponent(email)}`).then((res)=>{
+    accessConfirmation(email).then((res)=>{
        if(res.data.success===true){
         setRefresh(res.data.email)
         toast.success(" requset accept new parter wer added")
@@ -45,17 +48,30 @@ function Request({sendDataToParent}) {
   }
 
   const onFinish = (values) => {
-    axios.post(`${adminApi}rejected`,{data:values,email}).then((res)=>{
+    const datas={
+      data:values,
+      email:email
+    }
+    rejectedNow(datas).then((res)=>{
           if(res.data.success===true){
              toast.success("partner request rejected successfully")
              setIsModalOpen(false)
              sendDataToParent()
              setRefresh('force refresh')
+             messageApi.destroy
           }else{
             toast.error("something went wrong!")
           }
     })
    
+  };
+  const success = () => {
+    messageApi.open({
+      type: 'loading',
+      content: 'rejecting partner request ......',
+      duration: 0,
+    });
+  
   };
   
    
@@ -163,12 +179,13 @@ function Request({sendDataToParent}) {
                           <Button className="bg-red-900 mt-10 ml-5"  onClick={()=>{setIsModalOpen(true)}}>
                             Reject iT
                           </Button>
+                          {contextHolder}
                           <Modal title="confirmation"  open={isModalOpen}  onOk={() => {
                             setEmail(user.email)
                               form
                                 .validateFields()
                                 .then(() => {
-                                 
+                                  success()
                                   message.success(`Processing... to reject`);
                                   form.submit();
                                 })

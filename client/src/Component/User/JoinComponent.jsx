@@ -97,7 +97,7 @@ function Join() {
         </div>
       ) : (
         <div className="w-full flex justify-center mt-20 pb-20">
-          <div style={{ width: '600px',height:"800px" }} className="pt-10 flex justify-center bg-gray-200 pb-10">
+          <div style={{ width: '600px',height:"900px" }} className="pt-10 flex justify-center bg-gray-200 pb-10">
             {/* Pass the onFormSubmit callback to FormJoinComponent */}
             <FormJoinComponent onFormSubmit={handleFormSubmit} />
           </div>

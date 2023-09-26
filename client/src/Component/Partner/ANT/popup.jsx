@@ -7,24 +7,35 @@ import "../ANT/ANT.css"
 import {useEffect,useState} from 'react'
 import axios from 'axios';
 import { partnerApi } from '../../../Apis/api';
+import { useNavigate } from 'react-router-dom';
+import {NavDetails} from '../../../Apis/connections/partner'
 const App = () => {
 const dispatch = useDispatch()
+const navigate = useNavigate()
 const[partner,setPartner] =useState('')
+
+
+
 const LogotHandle=()=>{
   localStorage.removeItem('partnerInformation');
   dispatch(partnerLogOut())
+  navigate('/partner')
 }
 
 const datas = useSelector((state)=>{return state.partnerAuth})
 
 useEffect(()=>{
   const token = datas.PartnerToken
+
   console.log(token);
-  axios.get(`${partnerApi}navProfileDetails?id=${encodeURIComponent(token)}`).then((res)=>{
-    if(res.data.success===true){
-      setPartner(res.data.data.company)
-    }
-  })
+  const data=async()=>{
+    await  NavDetails().then((res)=>{
+      if(res.data.success===true){
+        setPartner(res.data.data.company)
+      }
+    })
+  }
+  data()
 },[])
   const content = (
     <div> 
@@ -42,7 +53,7 @@ useEffect(()=>{
           <div className='flex justify-around'>
             <button className="bg-red-400  text-white font-bold px-5 py-2 rounded focus:outline-none shadow hover:bg-red-700 transition-colors" onClick={()=>{LogotHandle()}} >Logout</button>
 
-            <button className="bg-blue-500  text-white font-bold px-5 py-2 rounded focus:outline-none shadow hover:bg-blue-700 transition-colors">View Profile</button>
+            <button className="bg-blue-500  text-white font-bold px-5 py-2 rounded focus:outline-none shadow hover:bg-blue-700 transition-colors" onClick={()=>{navigate('/partner/profile')}}>View Profile</button>
           </div>
           <br />
 

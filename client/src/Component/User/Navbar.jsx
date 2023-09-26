@@ -2,8 +2,7 @@ import {useSelector} from "react-redux";
 import {useEffect,useState}  from "react"
 import { useNavigate } from "react-router-dom";
 import App from "./ANT/popup";
-import axios from "axios";
-import { userApi } from "../../Apis/api";
+import {navDetails} from '../../Apis/connections/user'
 // import toast from "react-hot-toast";
 
 
@@ -11,6 +10,7 @@ function Navbar() {
    const [user,setUser] = useState({name:"",find:false})
    const [data,setData] = useState(false)
    const navigate = useNavigate()
+   
    const users = useSelector((state) => {
     return state?.userAuth
   });
@@ -19,18 +19,22 @@ function Navbar() {
     if(users.roll==="client"){
       setUser({name:users.user,find:true})
     }
-    axios.get(`${userApi}navDetails?data=${encodeURIComponent(users.token)}`).then((res)=>{
-      if(res.data.success===true){
-        if(res.data.userData===true){
-          setData(true)
+    const data = async()=>{
+      await navDetails(users.token).then((res)=>{
+        if(res.data.success===true){
+          if(res.data.userData===true){
+            setData(true)
+          }else{
+            setData(false)
+          }
+          console.log(data);
         }else{
           setData(false)
         }
-        console.log(data);
-      }else{
-        setData(false)
-      }
-    })
+      })
+    }
+    data()
+  
   },[name,data])
 console.log(data,'this is the user details');
   const home = () =>{

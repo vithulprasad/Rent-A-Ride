@@ -56,3 +56,9 @@
     cursor: text;
    
 }
+:where(.css-dev-only-do-not-override-nnuwmp).ant-upload-wrapper.ant-upload-picture-card-wrapper,
+:where(.css-dev-only-do-not-override-nnuwmp).ant-upload-wrapper.ant-upload-picture-circle-wrapper {
+    display: inline-block;
+    width: 100%;
+    padding-left: 0; /* Set padding-left to 0 to remove the left padding */
+}

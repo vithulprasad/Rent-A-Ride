@@ -48,8 +48,8 @@ function BikeManagement() {
             key: 'companyName',
             render: () => (
                 <div className='w-full h-[50px] flex justify-center font-mono font-bold'>
-                    <div className='w-full bg-green-100 h-[50px] flex justify-center items-center'>
-                        <h1>*Active</h1>
+                    <div className='w-full bg-red-200 h-[50px] flex justify-center items-center'>
+                        <h1>Rejected</h1>
                     </div>
                 </div>
               ),
@@ -60,7 +60,7 @@ function BikeManagement() {
           dataIndex: 'name', // Access the 'image' property directly
           key: 'details',
           render: (record) => (
-            <Button className='bg-lime-400 font-mono' onClick={() => purchaseDetails(record)}>Bike Details</Button>
+            <Button className='bg-red-400 font-mono' onClick={() => purchaseDetails(record)}>Bike Details</Button>
           ),
           width: 200,
           font:"mono",
@@ -73,7 +73,7 @@ function BikeManagement() {
                 if(res.data.success===true){
                     const data= res.data.bikes
                     const newData = data.filter((bike)=>{
-                      return bike.requestStatus==="completed"
+                      return bike.requestStatus==="rejected"
                     })
                     console.log(data);
                     setBikes(newData)

@@ -1,7 +1,8 @@
 import { Space, Table,Button ,Popconfirm,message } from 'antd';
-import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { adminApi } from '../../Apis/api';
+import {userDetails} from '../../Apis/connections/admin'
+import {userBlocking} from '../../Apis/connections/admin'
+
 import toast from 'react-hot-toast';
 const { Column, ColumnGroup } = Table;
 
@@ -17,7 +18,7 @@ function UserManagment() {
 
 useEffect(()=>{
     console.log("working..");
-   axios.get(`${adminApi}userDetails`).then((res)=>{
+    userDetails().then((res)=>{
     console.log(res.data.userData);
     if(res.data.success===false){
        toast.error("something went wrong !")
@@ -45,7 +46,7 @@ const addressInformation =(email)=>{
 }
 const blockingUser =(email)=>{
     try {
-        axios.get(`${adminApi}userBlocking?email=${encodeURIComponent(email)}`).then((res)=>{
+      userBlocking(email).then((res)=>{
             if(res.data.success===true){
                 console.log(res.data.blockedUser);
                 if(res.data.blockedUser===true){

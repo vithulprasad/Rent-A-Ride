@@ -1,33 +1,37 @@
-import { useState  ,Fragment} from 'react';
-import Navbar from '../../Component/Admin/Navbar';
-import Request from '../../Component/Admin/Request'
-import Partner from '../../Component/Admin/Partner';
-import UserManagment from '../../Component/Admin/userManagment';
-import BikeManagement from '../../Component/Admin/bikemanagement';
-import {Badge} from 'antd'
-import { useEffect } from 'react';
-
-
+import { useState, Fragment } from "react";
+import Navbar from "../../Component/Admin/Navbar";
+import Request from "../../Component/Admin/Request";
+import Partner from "../../Component/Admin/Partner";
+import UserManagment from "../../Component/Admin/userManagment";
+import BikeManagement from "../../Component/Admin/bikemanagement";
+import Requestd from "../../Component/Admin/BikeRequested";
+import RejectPage from "../../Component/Admin/BikeReject";
+import { bikeDetails } from "../../Apis/connections/admin";
+import { RequestDetails } from "../../Apis/connections/admin";
+import { Badge } from "antd";
+import { useEffect } from "react";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UserOutlined,
-  TeamOutlined ,
+  TeamOutlined,
   UsergroupAddOutlined,
   ToolOutlined,
-  LaptopOutlined
-} from '@ant-design/icons';
-import { Layout, Menu, Button, theme } from 'antd';
-import axios from 'axios';
-import { adminApi } from '../../Apis/api';
+  LaptopOutlined,
+} from "@ant-design/icons";
+import { Layout, Menu, Button, theme } from "antd";
+import toast from "react-hot-toast";
 
 const { Header, Sider, Content } = Layout;
+const { SubMenu } = Menu; // Add this line to import SubMenu
 
 const HomePage = () => {
-  const[user,setUser]=useState(0)
+  const [user, setUser] = useState(0);
+  const [bike, setBike] = useState(0);
+  const [refresh1, setRefresh1] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
-  const [selectedKey, setSelectedKey] = useState('1'); 
-  const [refresh,setRefresh] = useState(false)
+  const [selectedKey, setSelectedKey] = useState("1");
+  const [refresh, setRefresh] = useState(false);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -35,106 +39,169 @@ const HomePage = () => {
   const handleMenuItemClick = (item) => {
     setSelectedKey(item.key); // Update selectedKey when a menu item is clicked
   };
+
+  const onLoad = () => {
+    if (refresh === false) {
+      setRefresh(true);
+    } else {
+      setRefresh(false);
+    }
+  };
+
   useEffect(() => {
-    axios.get(`${adminApi}request`).then((res) => {
-      if (res.data.success === true) {
-        const number = res.data.request
-             const fill = number.filter((data)=>{return data.access==="requesting"})
-             const last = fill.length
-        setUser(last);
-      }
-    });
-  }, [refresh]);
+    const call = async () => {
+      await RequestDetails().then((res) => {
+        if (res.data.success === true) {
+          const number = res.data.request;
+          const fill = number.filter((data) => {
+            return data.access === "requesting";
+          });
+          const last = fill.length;
+          setUser(last);
+        }
+      });
+    };
 
+    call();
 
-  const receiveDataFromChild=()=>{
-       if(refresh===false){
-        setRefresh(true);
-       }else{
-        setRefresh(false)
-       }
-  }
+    const getBikes = async () => {
+      await bikeDetails().then((res) => {
+        if (res.data.success === true) {
+          const data = res.data.bikes;
+          const newData = data.filter((bike) => {
+            return (
+              bike.requestStatus === "requested" ||
+              bike.requestStatus === "requestingAgain"
+            );
+          });
+          setBike(newData.length);
+        } else {
+          toast.error("something went wrong!");
+        }
+      });
+    };
+    getBikes();
+  }, [refresh, refresh1]);
 
+  const receiveDataFromChild = () => {
+    if (refresh1 === false) {
+      setRefresh1(true);
+    } else {
+      setRefresh1(false);
+    }
+  };
 
   return (
     <Fragment>
-      <Navbar/>
-    <Layout>
-      <Sider trigger={null} collapsible collapsed={collapsed}>
-        <div className="demo-logo-vertical" />
-        <Menu
-          theme="dark"
-          mode="inline"
-          defaultSelectedKeys={['1']}
-          selectedKeys={[selectedKey]} // Set the selectedKeys prop to track the selected item
-          onClick={handleMenuItemClick} // Handle menu item click event
-          items={[
-            {
-              key: '1',
-              icon: <LaptopOutlined />,
-              label: 'DashBord',
-            },
-            {
-              key: '2',
-              icon:<Badge className="pr-2 " count={user}> <UsergroupAddOutlined /></Badge>,
-              label: 'Partner-Requests',
-            },
-            {
-              key: '3',
-              icon:<TeamOutlined />,
-              label: 'Partners',
-            },
-            {
-              key: '4',
-              icon:<UserOutlined />,
-              label: 'userManage',
-            },
-            {
-              key: '5',
-              icon:<ToolOutlined />,
-              label: 'bikeList',
-            },
-          ]}
-        />
-      </Sider>
+      <Navbar />
       <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }}>
-          <Button
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
+        <Sider trigger={null} collapsible collapsed={collapsed}>
+          <div className="demo-logo-vertical" />
+          <Menu
+            theme="dark"
+            mode="inline"
+            defaultSelectedKeys={["1"]}
+            selectedKeys={[selectedKey]}
+            onClick={handleMenuItemClick}
+          >
+            <Menu.Item key="1" icon={<LaptopOutlined />} label="Dashboard">
+              Dashboard
+            </Menu.Item>
+            <Menu.Item
+              key="2"
+              icon={
+                <Badge className="pr-2 " count={user}>
+                  <UsergroupAddOutlined />
+                </Badge>
+              }
+              label="Partner-Requests"
+            >
+              Partner-Requests
+            </Menu.Item>
+            <Menu.Item key="3" icon={<TeamOutlined />} label="Partners">
+              Partners
+            </Menu.Item>
+            <Menu.Item key="4" icon={<UserOutlined />} label="User Management">
+              User Management
+            </Menu.Item>
+            <SubMenu
+              key="5"
+              icon={
+                <Badge className="pr-2 " count={bike}>
+                  <ToolOutlined />
+                </Badge>
+              }
+              title="Bike Management"
+            >
+              <Menu.Item key="5-1" onClick={() => setSelectedKey("5-1")}>
+                Active Bikes
+              </Menu.Item>
+              <Menu.Item key="5-2" onClick={() => setSelectedKey("5-2")}>
+                Rejected
+              </Menu.Item>
+              <Menu.Item
+                key="5-3"
+                onClick={() => setSelectedKey("5-3")}
+                icon={
+                  <Badge className="pr-2 " count={bike}>
+                    <ToolOutlined />
+                  </Badge>
+                }
+              >
+                Requests
+              </Menu.Item>
+            </SubMenu>
+          </Menu>
+        </Sider>
+        <Layout>
+          <Header
             style={{
-              fontSize: '16px',
-              width: 64,
-              height: 64,
+              padding: 0,
+              background: colorBgContainer,
             }}
-          />
-        </Header>
-        <Content
-          style={{
-            margin: '24px 16px',
-            padding: 24,
-            minHeight: 595,
-            background: colorBgContainer,
-          }}
-        >
-          {(() => {
-            switch (selectedKey) { // Use selectedKey instead of key
-              case '1':
-                return <h1>admin dash board</h1>;
-              case '2':
-                return <Request sendDataToParent={receiveDataFromChild} />;
-              case'3':
-                return <Partner/>
-              case'4':
-                return <UserManagment/>
-              default:
-                return  <BikeManagement/>;
-            }
-          })()}
-        </Content>
+          >
+            <Button
+              type="text"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              onClick={() => setCollapsed(!collapsed)}
+              style={{
+                fontSize: "16px",
+                width: 64,
+                height: 64,
+              }}
+            />
+          </Header>
+          <Content
+            style={{
+              margin: "24px 16px",
+              padding: 24,
+              minHeight: 595,
+              background: colorBgContainer,
+            }}
+          >
+            {(() => {
+              switch (selectedKey) {
+                case "1":
+                  return <h1>Admin Dashboard</h1>;
+                case "2":
+                  return <Request sendDataToParent={receiveDataFromChild} />;
+                case "3":
+                  return <Partner />;
+                case "4":
+                  return <UserManagment />;
+                case "5-1":
+                  return <BikeManagement />;
+                case "5-2":
+                  return <RejectPage />;
+                case "5-3":
+                  return <Requestd requested={onLoad} />;
+                default:
+                  return <h1>Page not found</h1>;
+              }
+            })()}
+          </Content>
+        </Layout>
       </Layout>
-    </Layout>
     </Fragment>
   );
 };

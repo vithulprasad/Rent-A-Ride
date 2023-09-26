@@ -27,6 +27,7 @@ const [popup,setPopup] = useState(false)
   function logout() {
     dispatch(userLogOut());
     setLogouting(true);
+    navigate('/')
   }
 
   function login() {

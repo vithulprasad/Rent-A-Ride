@@ -34,3 +34,38 @@
     vertical-align: middle;
     height: 200px;
   }
+  :where(.css-dev-only-do-not-override-nnuwmp).ant-upload-wrapper.ant-upload-picture-card-wrapper, :where(.css-dev-only-do-not-override-nnuwmp).ant-upload-wrapper.ant-upload-picture-circle-wrapper {
+    display: inline-block;
+    width: 100%;
+    padding-left: 33px;
+}
+
+.animated-box {
+  width: 100px;
+  height: 100px;
+  background-color: red;
+  position: relative;
+  animation-name: example;
+  animation-duration: 4s;
+  animation-iteration-count: infinite; 
+}
+
+@keyframes example {
+  0%   {background-color: rgb(250, 143, 143); left: 0px; top: 0px;}
+  25%  {background-color: rgb(225, 225, 145); left: 200px; top: 0px;}
+  50%  {background-color: rgb(126, 126, 232); left: 200px; top: 200px;}
+  75%  {background-color: rgb(122, 218, 122); left: 0px; top: 200px;}
+  100% {background-color: rgb(232, 151, 151); left: 0px; top: 0px;}
+}
+
+:where(.css-dev-only-do-not-override-nnuwmp).ant-modal .ant-modal-content {
+  position: relative;
+  background-color: #ffffff;
+  background-clip: padding-box;
+  border: 0;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  pointer-events: auto;
+  padding: 20px 24px;
+  width: 441px;
+}
