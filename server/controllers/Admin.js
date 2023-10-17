@@ -5,11 +5,14 @@ const user = require('../models/Users')
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 const  jwt  = require('jsonwebtoken');
+const  couponModel = require('../models/Coupen');
+const booking = require('../models/booking')
 
 
 
 
 exports.login=async(req,res)=>{
+   console.log("dfsdfadfsd--------------------------------------f",req.body.data);
      const {email,password}=req.body.data   
      
      const AdminFind = await admin.find()
@@ -276,6 +279,83 @@ exports.partnerBikeReject=async(req,res)=>{
       }})
       res.status(200).json({success:true})
       
+   } catch (error) {
+      console.log(error.message);
+      res.status(200).json({success:false});
+   }
+}
+
+exports.addCoupon=async(req,res)=>{
+   try {
+        console.log(req.body.data);
+        const {heading,description,name,code,percentage,valid,expiry} = req.body.data;
+        const findCoupon = await couponModel.findOne({code:code})
+
+        if(findCoupon){
+           res.status(200).json({success:false,message:"coupon existing"})
+        }else{
+         if(percentage<100){
+            const coupon = new couponModel({
+               name:name,
+               heading:heading,
+               description:description,
+               code:code,
+               percentage:percentage,
+               minimum:valid,
+               expiry:expiry,
+               image:req.body.image,
+               date:Date.now()
+            })
+            const data =await coupon.save()
+            if(data){
+               res.status(200).json({success:true,message:"saved"})
+            }else{
+               res.status(200).json({success:false,message:"coupon not saved"})
+            }
+         }else{
+            res.status(200).json({success:false,message:"percentage amount cannot be set above 100"})
+         }
+   
+        }
+   } catch (error) {
+      console.log(error.message);
+      res.status(200).json({success:false});
+   }
+}
+exports.couponDetails=async(req,res)=>{
+   try {
+      console.log("couponDetails");
+      const coupons = await couponModel.find()
+      res.status(200).json({success:true,coupons:coupons})
+   } catch (error) {
+      console.log(error.message);
+      res.status(200).json({success:false});
+   }
+}
+exports.bookingAdmin =async(req,res)=>{
+  try {
+      const bookings = await booking.find()
+      .populate('userId')
+      .populate('bike')
+      .populate('partner')
+      console.log('start------',bookings,'---end---');
+      res.status(200).json({success:true,booking:bookings})
+  } catch (error) {
+   console.log(error.message);
+   res.status(200).json({success:false});
+  }
+}
+
+exports.singleOrderDetails = async(req,res)=>{
+   try {
+      const id = req.query.id;
+     console.log(id,'ieieieiei--');
+      const orders = await booking.find()
+      .populate('userId')
+      .populate('bike')
+      .populate('partner')
+     
+      res.status(200).json({success:true,orders:orders})
    } catch (error) {
       console.log(error.message);
       res.status(200).json({success:false});

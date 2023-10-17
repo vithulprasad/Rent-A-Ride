@@ -71,7 +71,26 @@ const user = mongoose.Schema({
 isPartner:{
     type:Boolean,
     default:false
-}
+},
+date:{
+    type:Date
+},
+location:{
+    type:String,
+},
+
+// ----wallet -------
+wallet:{
+    type:Number,
+    default:0
+},
+walletHistory:{
+    type:Array,
+    ref:"booking"
+},
+walletDate:[{
+    type:Date
+}]
 })
 
 module.exports = mongoose.model("user",user)

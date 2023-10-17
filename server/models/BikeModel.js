@@ -33,11 +33,11 @@ const bikes = mongoose.Schema({
         ref:'partner',
         required:true
      },
-     data:{
+     date:{
         type:Date
      },
      Users:{
-        type:String,
+        type:Array,
         ref:'users',
      },
      Listed:{
@@ -69,6 +69,13 @@ const bikes = mongoose.Schema({
      isComplete:{
        type:Boolean,
        default:false
+     },
+     isBooked:{
+     type:Boolean,
+     default:false
+     },
+     district:{
+      type:String,
      }
      
 })

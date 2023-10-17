@@ -6,7 +6,9 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const partner = require("../models/Partner");
 const BikeModel = require("../models/BikeModel");
-
+const stripe = require('stripe')(process.env.STRIPID);
+const booking = require('../models/booking')
+const couponModel = require('../models/Coupen')
 //---------------------------comparing otp and verify the email---------------------------//
 exports.otp = async (req, res) => {
   try {
@@ -22,6 +24,7 @@ exports.otp = async (req, res) => {
         email: email,
         password: passwordHash,
         role: "client",
+        date:Date.now()
       });
       await user
         .save()
@@ -211,7 +214,8 @@ exports.companyRegistration = async (req, res) => {
         role: "partner",
         address: Address,
         company: CompanyName,
-        locationPoints:selectedLocations
+        locationPoints:selectedLocations,
+        date:Date.now()
       });
       await Partner.save()
         .then(async () => {
@@ -293,8 +297,68 @@ exports.googleAuthentication = async (req, res) => {
 
 exports.getBikeInformation = async (req, res) => {
   try {
-    const bikes = await BikeModel.find();
-    res.status(200).json({ success: true, bikes: bikes });
+    const location = req.query.location
+    const mo= await BikeModel.find().populate('partnerId')
+   
+    const bikes = location=="noValue" ? await BikeModel.find():mo.filter((value)=>{ return value.partnerId.address.district==location})
+
+
+    const BrandName = location=="noValue"
+    ? await BikeModel.aggregate([
+        {
+          $group: {
+            _id: "$BrandName",
+            count: { $sum: 1 }
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            name: "$_id",
+            count: 1
+          }
+        }
+      ])
+    : await BikeModel.aggregate([
+        {
+          $match: {
+            district : location
+          }
+        },
+        {
+          $group: {
+            _id: "$BrandName",
+            count: { $sum: 1 }
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            name: "$_id",
+            count: 1
+          }
+        }
+      ]);
+  
+    const locations = await company.aggregate([
+   
+      {
+        $group: {
+          _id: "$address.district", 
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          name: "$_id", 
+        
+        }
+      }
+    ]);
+    
+ 
+    res.status(200).json({ success: true, bikes: bikes ,Brand :BrandName,locations:locations,bikesingle:mo });
   } catch (error) {
     console.log(error.message);
     res.status(200).json({ success: false });
@@ -379,3 +443,278 @@ exports.editProfileData = async (req, res) => {
     res.status(200).json({ success: false });
   }
 };
+exports.orderPageDetails=async(req,res)=>{
+  try {
+     const id = req.query.id;
+     console.log(id,'---------------------');
+     const data = await BikeModel.findOne({_id:id}).populate("partnerId")
+     console.log(data.partnerId.address);
+     if(data){
+      res.status(200).json({ success: true,data:data})
+     }else{
+      res.status(200).json({ success: false})
+     }
+  } catch (error) {
+    res.status(200).json({ success: false });
+  }
+}
+
+
+
+exports.checkout=async(req,res)=>{
+  try {
+    const data = req.body.data.data
+    const helmet = req.body.data.helmet
+    const completeAmount = data.total+helmet*50+data.total-50+50
+    const coupon = req.body.data.coupon ?? ""
+    const couponAmount = parseInt(coupon)?? ""
+    const id = req.body.data.couponId
+     const bikedetails = await BikeModel.findOne({_id:data.bike})
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'inr',
+            product_data: {
+              name:`name:${ bikedetails.name} location:${data.location}, price per day:${data.rent}`,
+            },
+            unit_amount:completeAmount * 100,
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: 'http://localhost:3000/success',
+      cancel_url: 'http://localhost:3000/cancel',
+    });
+    const date={
+      startDate:data.startDate,
+      endDate:data.endDate,
+      startTime:data.startTime,
+      endTime:data.endTime,
+    }
+  
+    const difference ={
+      date:data.differenceInDays,
+      time:data.differenceInHour
+    }
+  const bookingId = session.id
+   const Booking = new booking({
+         bookingId:bookingId,
+         userId:req.id,
+         bike:data.bike,
+         partner:bikedetails.partnerId,
+         paymentStatus:"pending",
+         purchaseDate:Date.now(),
+         dates:date,
+         difference:difference,
+         location:data.location,
+         bikeStatus:"pending",
+         image:bikedetails.image[0],
+         bikeName:bikedetails.name,
+         totalAmount:data.total+data.total-50+helmet*50+50-couponAmount,
+         deposit:data.total-50,
+         helmet:helmet,
+         couponCode:coupon,
+         couponId:id,
+   })
+ const saveDetails = Booking.save()
+        id ?  await couponModel.findOneAndUpdate({_id:id},{$push:{user:req.id}}): null;
+        if(saveDetails){
+          res.json({id:session.id ,success: true,userDetails:"true"});
+        }else{
+          res.status(200).json({ success: false  });
+        }
+
+  } catch (error) {
+    console.log(error.message);
+     res.status(200).json({ success: false });
+  }
+}
+
+exports.paymentSuccess=async(req,res)=>{
+  try {
+      
+   
+       const userFirstOrder = await booking.findOne({userId:req.id}).sort({purchaseDate:-1}).limit(1)
+       console.log(userFirstOrder.id);
+       const findBooking = await booking.findOne({_id:userFirstOrder.id})
+   
+    
+
+       const sessionId = findBooking.bookingId;
+  
+       stripe.checkout.sessions.retrieve(sessionId, (error, session) => {
+         if (error) {
+           console.error(error);
+           return;
+         }
+         if (session.payment_status === 'paid') {
+           console.log('Payment was successful');
+       
+          
+           const payment=async()=>{
+            console.log();
+            await booking.findOneAndUpdate({_id:userFirstOrder.id},{
+              $set:{
+                paymentStatus:"success",
+                purchaseDate:Date.now(),
+                bikeStatus:"booked",
+                couponAdd: findBooking.couponId=="" ||  findBooking.couponId=="0" ? false : true
+              }
+            })
+            await BikeModel.findOneAndUpdate({_id:findBooking.bike},{$set:{isBooked:true}})
+           }
+           payment()
+         } else {
+            const payment = async()=>{
+              await booking.findOneAndUpdate({_id:userFirstOrder.id},{
+                $set:{
+                  paymentStatus:"failed",
+                }
+              })
+            }
+            payment()
+           console.log('Payment was not successful');
+         }
+       });
+
+     
+  
+  } catch (error) {
+    console.log(error.message,'in payment sucess');
+    res.status(200).json({ success: false });
+  }
+}
+
+exports.paymentDetails=async(req,res)=>{
+  console.log("entering to the booking details");
+  try {
+      const user = req.id 
+      const data = await booking.aggregate([
+        {
+          $match:{
+           userId:user,
+           paymentStatus:"success"
+        }},
+        {
+          $sort:{
+            purchaseDate:-1
+          }
+        }
+
+      ])
+     
+      res.status(200).json({success:true,data:data})
+  } catch (error) {
+    console.log(error.message);
+    res.status(200).json({ success: false });
+  }
+}
+
+exports.applyCoupon=async(req,res)=>{
+  try {
+    
+    const {value,code} = req.body.data
+   const findCoupon = await couponModel.findOne({code:code})
+   
+   const bikeAmount = value.total
+      if(findCoupon){
+        const users = req.id
+        const userExists = findCoupon.user.some((value) => value ==users);
+           console.log(userExists);
+           if(userExists===true){
+            res.status(200).json({ success: false ,message:"coupon is already used by the user"});
+           }else{
+            console.log(findCoupon.minimum,'-----');
+              if(findCoupon.minimum < bikeAmount){
+                const date1 = Date.now(); 
+                const date2 = new Date(findCoupon.date); 
+                const days = findCoupon.expiry
+                const timeDifferenceInMilliseconds = date1 - date2.getTime();
+                const daysDifference = Math.floor(timeDifferenceInMilliseconds / (1000 * 60 * 60 * 24))
+                console.log("--expiry---",days,'--now---',daysDifference);
+                if(daysDifference<=days){
+                  let value = bikeAmount;
+                  let percentage = findCoupon.percentage; 
+                  const calculatedAmountOnValue =Math.round(value * (percentage / 100)) ; 
+                 
+                  const data={
+                    value:calculatedAmountOnValue,
+                    couponId:findCoupon._id
+                  }
+                  res.status(200).json({ success: true ,message:"coupon apply success",data:data});
+                }else{
+                  res.status(200).json({ success: false ,message:"coupon as expired"});
+                }
+              }else{
+                res.status(200).json({ success: false ,message:"cannot apply coupon on this"});
+              }
+           }
+      }else{
+        res.status(200).json({ success: false ,message:"invalid coupon code"});
+      }
+  } catch (error) {
+     console.log(error.message);
+     res.status(200).json({ success: false,message:"internal server error"});
+
+  }
+}
+exports.listCoupons=async(req,res)=>{
+  try {
+     const offers = await couponModel.find()
+     res.json({success:true,offers:offers})
+  } catch (error) {
+    console.log(error.message)
+    res.status(200).json({ success: false,message:"internal server error"});
+  }
+}
+exports.cancelBooking=async(req,res)=>{
+  try {
+    const id  = req.query.id;
+    const findBike= await booking.findOne({_id:id});
+    const findUser = await users.findOne({_id:req.id})
+    const totalAmount = findBike.totalAmount+findUser.wallet
+  const updateBooking = await booking.findOneAndUpdate({_id:id},{$set:{bikeStatus:"canceled"}})
+  const updateBike =  await BikeModel.findOneAndUpdate({_id:findBike.bike},{$set:{isBooked:false}})
+  const updateWallet = await users.findOneAndUpdate({_id:req.id},{$inc:{wallet:totalAmount}})
+  await users.findOneAndUpdate({_id:req.id},{$push:{walletHistory:id}})
+  await users.findOneAndUpdate({_id:req.id},{$push:{walletDate:Date.now()}})
+    Promise.all(updateBooking,updateBike,updateWallet)
+    .then(()=>{
+      res.status(200).json({success:true})
+    })
+    .catch((err)=>{
+      console.log(err);
+      res.json({success:false})
+    })
+  } catch (error) {
+    console.log(error.message)
+    res.status(200).json({ success: false,message:"internal server error"});
+  }
+}
+
+exports.tariffPage=async(req,res)=>{
+  try {
+      const bike = await BikeModel.find().populate("partnerId")
+      res.status(200).json({success:true,bikes:bike})
+  } catch (error) {
+    console.log(error.message)
+    res.status(200).json({ success: false,message:"internal server error"});
+  }
+}
+
+
+exports.walletDetails =async(req,res)=>{
+  try {
+    console.log("entertig");
+   const details=await users.findOne({ _id: req.id }).populate('walletHistory') 
+      console.log(details);
+      res.status(200).json({success:true,details:details})
+  } catch (error) {
+    console.log(error.message)
+    res.status(200).json({ success: false,message:"internal server error"});
+  }
+}

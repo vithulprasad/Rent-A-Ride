@@ -2,6 +2,8 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const partner = require("../models/Partner");
 const bikes = require("../models/BikeModel");
+const booking = require("../models/booking");
+const users = require("../models/Users")
 exports.login = async (req, res) => {
   try {
     console.log(req.body.data);
@@ -105,10 +107,11 @@ exports.AddBike = async (req, res) => {
           cc: bikeCC,
           PlateNumber: plateNumber,
           partnerId: partnerId,
-          data: Date.now(),
+          date: Date.now(),
           image: req.body.data.image,
           companyName: partnerDetails.company,
           locations: location,
+          district:partnerDetails.address.district
         });
         await addBike
           .save()
@@ -160,7 +163,7 @@ exports.PartnerDetails = async (req, res) => {
       res.status(200).json({ success: false });
     }
   } catch (error) {
-    console.log(error.message);
+    console.log(error.message,'-------error message from partner side------profile-------');
     res.status(200).json({ success: false });
   }
 };
@@ -208,7 +211,7 @@ exports.partnerEdit = async (req, res) => {
       res.status(200).json({ success: false });
     }
   } catch (error) {
-    console.log(error.message);
+    console.log(error.message,'-------error message from partner side------profile edit-------');
     res.status(200).json({ success: false });
   }
 };
@@ -281,4 +284,79 @@ exports.editBike = async (req, res) => {
     console.log(error.message);
     res.status(200).json({ success: false });
   }
-};
+}
+
+exports.partnerBookings=async(req,res)=>{
+  try {
+    const partnerId = req.id;
+    const data = await booking.find({partner:partnerId})
+    .populate("userId")
+    .populate("bike")
+    console.log(data,'partner details ',);
+    res.status(200).json({ success: true ,data:data});
+  } catch (error) {
+    console.log(error.message);
+    res.status(200).json({ success: false });
+  }
+}
+exports.unlist=async(req,res)=>{
+  try {
+    const id = req.query.id
+    const check = await bikes.findOne({_id:id})
+      if(check.isBooked==true){
+        res.status(200).json({ success: true ,message:"the bike was booked"});
+      }else{
+        const findBike = await bikes.findOneAndUpdate({_id:id},{$set:{Listed:true,available:false}})
+        res.status(200).json({ success: true ,message:"success"});
+      }
+    
+  } catch (error) {
+    console.log(error.message);
+    res.status(200).json({ success: false });
+  }
+}
+exports.list=async(req,res)=>{
+  try {
+    const id = req.query.id
+    const check = await bikes.findOne({_id:id})
+      if(check.isBooked==true){
+        res.status(200).json({ success: true });
+      }else{
+        const findBike = await bikes.findOneAndUpdate({_id:id},{$set:{Listed:false,available:true}})
+        res.status(200).json({ success: true});
+      }
+    
+  } catch (error) {
+    console.log(error.message);
+    res.status(200).json({ success: false });
+  }
+}
+
+exports.completeBooking = async (req, res) => {
+  try {
+    const id = req.query.id;
+    const bookingNow = await booking.findOne({ _id: id });
+    const bikeId = booking.bike;
+
+    const booking1 = await booking.findOneAndUpdate({ _id: id }, { $set: { bikeStatus: "complete" } });
+    const bikes1 = await bikes.findOneAndUpdate({ _id: bikeId }, { $set: { isBooked: false } });
+    const users1 = await users.findOneAndUpdate({ _id: bookingNow.userId }, { $inc: { wallet: bookingNow.totalAmount } });
+    const users2 = await users.findOneAndUpdate({ _id: bookingNow.userId }, { $push: { walletHistory: id} });
+    await users.findOneAndUpdate({ _id: bookingNow.userId }, { $push: { walletDate: Date.now()} });
+
+    // Create an array of promises and pass it to Promise.all
+    const promises = [booking1, bikes1, users1, users2];
+
+    Promise.all(promises)
+      .then(() => {
+        res.status(200).json({ success: true });
+      })
+      .catch((err) => {
+        console.log(err.message, 'error from booking complete');
+        res.status(200).json({ success: false });
+      });
+  } catch (error) {
+    console.log(error.message, 'error from booking complete');
+    res.status(200).json({ success: false });
+  }
+}

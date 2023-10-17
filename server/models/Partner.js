@@ -30,14 +30,14 @@ const partner = mongoose.Schema({
         require:true
     },
     //----------------------addresses--------------------------//
-    address:[{
+    address:{
         district:{type:String},
         state:{type:String},
         localArea:{type:String},
         age:{type:Number},
         post:{type:String},
         pin:{type:Number}
-    }],
+    },
     requestStatus:{
         type:Boolean,
         default:false
@@ -59,7 +59,7 @@ const partner = mongoose.Schema({
         type:String
     },
 
-    // ---------------------image handling ----------------------//
+// ---------------------image handling ----------------------//
     image:{
         type:String, 
         default:'' 
@@ -73,6 +73,9 @@ isClient:{
 },
 locationPoints:{
     type:Array
+},
+date:{
+    type:Date
 }
 
 

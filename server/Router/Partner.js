@@ -5,12 +5,18 @@ const Auth =  require('../MiddleWare/partnerMiddleware/prtnerAuth')
 
 Partner_router.post('/partnerLogin',partnerController.login)
 Partner_router.get('/navProfileDetails', partnerController.navProfileDetails)
-Partner_router.post('/AddBike',Auth.partnerAuth,partnerController.AddBike)
-Partner_router.get('/listBike',Auth.partnerAuth, partnerController.listBike)
-Partner_router.get('/PartnerDetails',Auth.partnerAuth, partnerController.PartnerDetails)
-Partner_router.post('/partnerEdit',Auth.partnerAuth, partnerController.partnerEdit)
-Partner_router.get('/locationDetails',Auth.partnerAuth, partnerController.locationDetails)
-Partner_router.get('/bikeDelete',Auth.partnerAuth,partnerController.bikeDelete)
-Partner_router.post('/editBike',Auth.partnerAuth, partnerController.editBike)
 
+
+
+Partner_router.post('/AddBike',Auth.partnerAuth,Auth.isBlocked,partnerController.AddBike)
+Partner_router.get('/listBike',Auth.partnerAuth,Auth.isBlocked,partnerController.listBike)
+Partner_router.get('/PartnerDetails',Auth.partnerAuth,Auth.isBlocked,partnerController.PartnerDetails)
+Partner_router.post('/partnerEdit',Auth.partnerAuth,Auth.isBlocked,partnerController.partnerEdit)
+Partner_router.get('/locationDetails',Auth.partnerAuth,Auth.isBlocked,partnerController.locationDetails)
+Partner_router.get('/bikeDelete',Auth.partnerAuth,Auth.isBlocked,partnerController.bikeDelete)
+Partner_router.post('/editBike',Auth.partnerAuth,Auth.isBlocked,partnerController.editBike)
+Partner_router.get('/partnerBookings',Auth.partnerAuth,Auth.isBlocked,partnerController.partnerBookings)
+Partner_router.get('/unlist',Auth.partnerAuth,Auth.isBlocked,partnerController.unlist)
+Partner_router.get('/list',Auth.partnerAuth,Auth.isBlocked,partnerController.list)
+Partner_router.get('/completeBooking',Auth.partnerAuth,Auth.isBlocked,partnerController.completeBooking)
 module.exports= Partner_router;
