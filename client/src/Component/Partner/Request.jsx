@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { EditBike } from "../../Apis/connections/partner";
 import PropTypes from 'prop-types';
 import toast from "react-hot-toast";
+import Loading from '../../Component/Loading/loading'
 import {
   Table,
   Button,
@@ -21,7 +22,14 @@ import { SyncOutlined } from "@ant-design/icons";
 import { bikeDelete } from "../../Apis/connections/partner";
 const { Column } = Table;
 
+
+
+
+
+
 function Request({ refreshed }) {
+const [loading,setLoading] = useState(true)
+
   const partner = useSelector((state) => {
     return state.partnerAuth.PartnerToken;
   });
@@ -33,6 +41,7 @@ function Request({ refreshed }) {
       await listBike().then((res) => {
         if (res.data.success) {
           setBike(res.data.bikes);
+          setLoading(false)
         } else {
           toast.error("Something went wrong");
         }
@@ -52,7 +61,8 @@ function Request({ refreshed }) {
   };
   return (
     <div>
-      {bike.length > 0 ? (
+      {loading ? (<Loading/>):(<>
+        {bike.length > 0 ? (
         <MyTable bike={bike} refresh={handleRefresh} />
       ) : (
         <div className="w-full h-[600px]  flex justify-center items-center">
@@ -67,6 +77,8 @@ function Request({ refreshed }) {
           ></div>
         </div>
       )}
+      </>)}
+     
     </div>
   );
 }
@@ -81,9 +93,12 @@ Request.propTypes = {
 
   
 const MyTable = ({ bike, refresh }) => {
+  const [loading,setLoading] = useState(false)
   const [form] = Form.useForm();
   const [modal2Open, setModal2Open] = useState(false);
+
   const deleted = async (id) => {
+    setLoading(true)
     toast.success(`adsfs${id._id}`);
     console.log(id);
 
@@ -91,6 +106,7 @@ const MyTable = ({ bike, refresh }) => {
       if (res.data.success) {
         toast.success("deleted successfully");
         refresh();
+        setLoading(false)
       } else {
         toast.error("something went wrong");
       }
@@ -107,12 +123,14 @@ const MyTable = ({ bike, refresh }) => {
   };
 
   const onFinish = async (values) => {
+    setLoading(true)
     await EditBike(values)
       .then((res) => {
         if (res.data.success === true) {
           toast.success("bike edited successfully");
           refresh();
           setModal2Open(false);
+          setLoading(false)
         } else {
           toast.error("something went wrong");
         }
@@ -131,7 +149,10 @@ const MyTable = ({ bike, refresh }) => {
     });
   };
   return (
-    <Table dataSource={bike}>
+    <>
+    {loading ? (<Loading/>):(<>
+    
+      <Table dataSource={bike}>
       <Column
         title="Image"
         dataIndex="image"
@@ -187,8 +208,8 @@ const MyTable = ({ bike, refresh }) => {
         render={(requestStatus, _id) =>
           requestStatus === "requested" ? (
             <Popconfirm
-              title="Delete the task"
-              description="Are you sure to delete this task?"
+              title="Remove the bike"
+              description="Are you sure you want to Remove this Bike !"
               onConfirm={() => {
                 deleted(_id);
               }}
@@ -202,8 +223,8 @@ const MyTable = ({ bike, refresh }) => {
             <Button className="bg-lime-500">List Now</Button>
           ) : requestStatus === "requestingAgain" ? (
             <Popconfirm
-              title="Delete the task"
-              description="Are you sure to delete this task?"
+              title="Remove the bike"
+              description="Are you sure you want to Remove this Bike !?"
               onConfirm={() => {
                 deleted(_id);
               }}
@@ -344,8 +365,8 @@ const MyTable = ({ bike, refresh }) => {
                 Reason
               </Button>
               <Popconfirm
-                title="Delete the task"
-                description="Are you sure to delete this task?"
+                title="Remove the bike "
+                description="Are you sure to Remove the bike?"
                 onConfirm={() => {
                   deleted(_id);
                 }}
@@ -360,6 +381,9 @@ const MyTable = ({ bike, refresh }) => {
         }
       />
     </Table>
+    </>)}
+   
+    </>
   );
 };
 MyTable.propTypes = {

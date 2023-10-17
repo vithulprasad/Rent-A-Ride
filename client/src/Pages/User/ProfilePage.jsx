@@ -9,11 +9,14 @@ import EditProfileComponent from '../../Component/User/EditProfileComponent';
 import { profileEditDataDetails } from "../../Apis/connections/user";
 import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
+import Loading from '../../Component/Loading/loading'
+import Wallet from '../../Component/User/Wallet'
 function ProfilePage({authorized}) {
   const [firstName,setFirstName] = useState("no name")
   const [lastName,setLastName] = useState("no name")
   const [imageurl,setImageUrl] = useState("")
   const [refresh,setRefresh] = useState(true);
+  const [loading,setLoading] = useState(true);
     const navigate= useNavigate()
   console.log("this is the parent comonent");
     useEffect(()=>{
@@ -35,7 +38,7 @@ function ProfilePage({authorized}) {
         }else{
           setImageUrl(uData.Profile)
         }
-        
+        setLoading(false)
       } else {
         toast.error("Something went wrong");
       }
@@ -79,14 +82,15 @@ function ProfilePage({authorized}) {
           label:  <Button className="text-white bg-red-400" type="primary">
            Wallet
            </Button>,
-          children: 'THis is the wallet page ',
+          children:<Wallet/>,
         },
       ];
    
   return (
     <Fragment>
         <Navbar/>
-        <div className='flex h-[700px]'>
+        {loading ? (<Loading/>): (<>
+          <div className='flex h-[700px]'>
           <div className='w-[20%] h-full p-2'>
             <div className='w-full h-full flex  flex-col '>
               <div className='w-full flex justify-center pt-2'>
@@ -109,6 +113,8 @@ function ProfilePage({authorized}) {
         />
         </div>
       </div>
+        </>)}
+ 
         <Footer/>
     </Fragment>
   )

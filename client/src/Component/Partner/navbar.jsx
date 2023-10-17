@@ -24,9 +24,9 @@ const bikeHandler=()=>{
     toast.error('something went wrong')
   }
 }
-const productHandler=()=>{
+const portFolio=()=>{
   try {
-    toast.success("entering to the product page");
+    navigate('/partner/portfolio')
   } catch (error) {
     toast.error('something went wrong')
   }
@@ -34,24 +34,27 @@ const productHandler=()=>{
 const bookingHandler = ()=>{
   try {
     toast.success("entering to the booking page");
+    navigate('/partner/booking')
   } catch (error) {
     toast.error('something went wrong')
     
   }
 }
-const offersHandler=()=>{
-  try {
-    toast.success("entering to the offers page");
-    
-  } catch (error) {
-    toast.error('something went wrong')
-    
-  }
-}
+
 const tariffHandler = ()=>{
   try {
     toast.success("entering to the tariff page");
+    navigate('/partner/tariff')
+  } catch (error) {
+    toast.error('something went wrong')
     
+  }
+}
+
+const Chat = ()=>{
+  try {
+    toast.success("entering to the Chat page");
+    navigate('/partner/chat')
   } catch (error) {
     toast.error('something went wrong')
     
@@ -68,9 +71,11 @@ const tariffHandler = ()=>{
         <button onClick={home} className="p-1  ml-5 border border-transparent rounded hover:bg-gray-50">Home</button> 
         <button onClick={()=>bikeHandler()} className="p-1  ml-5 border border-transparent rounded hover:bg-gray-50" >bikes</button> 
         <button onClick={()=>{bookingHandler()}} className="p-1  ml-5 border border-transparent rounded hover:bg-gray-50">bookings</button> 
-        <button onClick={()=>{productHandler()}} className="p-1  ml-5 border border-transparent rounded hover:bg-gray-50">Product</button> 
-        <button onClick={()=>{offersHandler()}} className="p-1 w-20 ml-2 border border-transparent rounded hover:bg-gray-50">Offers</button> 
+        <button onClick={()=>{portFolio()}} className="p-1 w-20 border border-transparent rounded hover:bg-gray-50">portFolio</button> 
+        <button onClick={()=>{Chat()}} className="p-1 w-20 border border-transparent rounded hover:bg-gray-50">Chat</button> 
         <button onClick={()=>{tariffHandler()}} className="p-1 w-20 border border-transparent rounded hover:bg-gray-50">tariff</button> 
+
+
           <App />
         </div>
     </div>

@@ -10,14 +10,20 @@ import { bikeDetails } from "../../Apis/connections/admin";
 import { RequestDetails } from "../../Apis/connections/admin";
 import { Badge } from "antd";
 import { useEffect } from "react";
+import Loading from '../../Component/Loading/loading'
+import Sales from "../../Component/Admin/Sales";
+import Coupon from "../../Component/Admin/Coupon";
+
 import {
   MenuFoldOutlined,
+  FrownOutlined,
   MenuUnfoldOutlined,
   UserOutlined,
   TeamOutlined,
   UsergroupAddOutlined,
   ToolOutlined,
   LaptopOutlined,
+  SafetyCertificateOutlined
 } from "@ant-design/icons";
 import { Layout, Menu, Button, theme } from "antd";
 import toast from "react-hot-toast";
@@ -26,6 +32,8 @@ const { Header, Sider, Content } = Layout;
 const { SubMenu } = Menu; // Add this line to import SubMenu
 
 const HomePage = () => {
+  const [loading,setLoading] = useState(false)
+
   const [user, setUser] = useState(0);
   const [bike, setBike] = useState(0);
   const [refresh1, setRefresh1] = useState(false);
@@ -50,6 +58,7 @@ const HomePage = () => {
 
   useEffect(() => {
     const call = async () => {
+      setLoading(true)
       await RequestDetails().then((res) => {
         if (res.data.success === true) {
           const number = res.data.request;
@@ -58,6 +67,7 @@ const HomePage = () => {
           });
           const last = fill.length;
           setUser(last);
+          setLoading(false)
         }
       });
     };
@@ -65,6 +75,7 @@ const HomePage = () => {
     call();
 
     const getBikes = async () => {
+      setLoading(true)
       await bikeDetails().then((res) => {
         if (res.data.success === true) {
           const data = res.data.bikes;
@@ -75,6 +86,7 @@ const HomePage = () => {
             );
           });
           setBike(newData.length);
+          setLoading(false)
         } else {
           toast.error("something went wrong!");
         }
@@ -95,6 +107,7 @@ const HomePage = () => {
     <Fragment>
       <Navbar />
       <Layout>
+      {loading ? (<Loading/>) : (<>
         <Sider trigger={null} collapsible collapsed={collapsed}>
           <div className="demo-logo-vertical" />
           <Menu
@@ -107,6 +120,7 @@ const HomePage = () => {
             <Menu.Item key="1" icon={<LaptopOutlined />} label="Dashboard">
               Dashboard
             </Menu.Item>
+           
             <Menu.Item
               key="2"
               icon={
@@ -133,10 +147,18 @@ const HomePage = () => {
               }
               title="Bike Management"
             >
-              <Menu.Item key="5-1" onClick={() => setSelectedKey("5-1")}>
+              <Menu.Item key="5-1" onClick={() => setSelectedKey("5-1")}
+                icon={
+                  <SafetyCertificateOutlined />
+                }
+              >
                 Active Bikes
               </Menu.Item>
-              <Menu.Item key="5-2" onClick={() => setSelectedKey("5-2")}>
+              <Menu.Item key="5-2" onClick={() => setSelectedKey("5-2")}
+                 icon={
+                  <FrownOutlined />
+              }
+              >
                 Rejected
               </Menu.Item>
               <Menu.Item
@@ -150,8 +172,16 @@ const HomePage = () => {
               >
                 Requests
               </Menu.Item>
+              
             </SubMenu>
+            <Menu.Item key="6" icon={<LaptopOutlined />} label="Dashboard">
+             Coupon management
+            </Menu.Item>
+            <Menu.Item key="7" icon={<LaptopOutlined />} label="Dashboard">
+             sales
+            </Menu.Item>
           </Menu>
+         
         </Sider>
         <Layout>
           <Header
@@ -195,12 +225,18 @@ const HomePage = () => {
                   return <RejectPage />;
                 case "5-3":
                   return <Requestd requested={onLoad} />;
+                case "6":
+                  return <Coupon />;
+                case "7":
+                  return <Sales />;  
                 default:
                   return <h1>Page not found</h1>;
               }
             })()}
           </Content>
         </Layout>
+      </>)}
+       
       </Layout>
     </Fragment>
   );

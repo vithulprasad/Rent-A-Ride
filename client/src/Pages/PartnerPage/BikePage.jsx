@@ -82,13 +82,10 @@ useEffect(()=>{
       <div className="flex mt-2 ">
         <div className="w-[600px] bg-grey-100 flex justify-around">
           <div
-            className="w-[260px] h-[400px] p-5 mt-7 rounded"
-            style={{
-              boxShadow:
-                "inset 0 -3em 3em rgba(0, 0, 0, 0.1),0 0 0 2px rgb(255, 255, 255),0.3em 0.3em 1em rgba(0, 0, 0, 0.3)",
-            }}
+            className="w-[260px] h-[300px] p-5 mt-7 border"
+           
           >
-            <div className="w-full ">
+            <div className="w-full h-16">
               <h1 className="text-center mt-8 mb-8 font-mono font-bold text-2xl text-slate-700">
                 Vehicle Management
               </h1>
@@ -102,7 +99,7 @@ useEffect(()=>{
                 onClick={() => {
                   AddVehicle();
                 }}
-                className="font-mono font-bold group bg-blue-50 h-8  w-full border-gray-300 rounded-lg transition duration-300 hover:border-green-400 focus:bg-cyan-600 active:bg-green-900"
+                className="font-mono font-bold group bg-blue-50  h-12  w-full border-gray-300  transition duration-300 hover:border-green-400 focus:bg-cyan-600 active:bg-green-900"
               >
                 ADD Vehicle
               </button>
@@ -117,7 +114,7 @@ useEffect(()=>{
                   ListVehicle();
                 }}
                
-                className="font-mono font-bold bg-blue-50 group h-8  w-full  border-gray-300 rounded-lg transition duration-300 hover:border-blue-400 focus:bg-cyan-600 active:bg-blue-100"
+                className="font-mono font-bold bg-blue-50 group  h-12   w-full  border-gray-300  transition duration-300 hover:border-blue-400 focus:bg-cyan-600 active:bg-blue-100"
               >
                 Active Bikes
               </button>
@@ -131,7 +128,7 @@ useEffect(()=>{
                 onClick={() => {
                   EditVehicle();
                 }}
-                className="font-mono font-bold bg-blue-50 group h-8  w-full  border-gray-300 rounded-lg transition duration-300 hover:border-blue-400 focus:bg-cyan-600 active:bg-blue-100"
+                className="font-mono font-bold bg-blue-50 group h-12  w-full  border-gray-300  transition duration-300 hover:border-blue-400 focus:bg-cyan-600 active:bg-blue-100"
               >
                 UnListed Bikes
               </button>
@@ -148,7 +145,7 @@ useEffect(()=>{
                 onClick={() => {
                   RequestHandler();
                 }}
-                className="bg-blue-50 group h-8 w-full  border-gray-300 rounded-lg transition duration-300 hover:border-blue-400 focus:bg-cyan-600 active:bg-blue-100"
+                className="bg-blue-50 group  h-12  w-full  border-gray-300  transition duration-300 hover:border-blue-400 focus:bg-cyan-600 active:bg-blue-100"
               >
               <Badge className="p-2 font-mono font-bold" count={bike}>
                       Request

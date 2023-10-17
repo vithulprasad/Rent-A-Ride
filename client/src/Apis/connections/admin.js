@@ -2,7 +2,9 @@ import { adminAxiosInstance } from "../axios"
 
 const login =async(data)=>{
     try {
+        console.log("instance is calling");
         const response = await adminAxiosInstance.post(`login`,{data})
+        console.log(response);
         return response;
     } catch (error) {
         console.log(error.message);
@@ -81,6 +83,38 @@ const userBlocking = async(email)=>{
         console.log(error.message); 
     }
 }
+const addCoupon = async(data,image)=>{
+    try {
+       const response = await adminAxiosInstance.post(`addCoupon`,{data,image})
+       return response 
+    } catch (error) {
+        console.log(error.message); 
+    }
+}
+const getCoupons = async()=>{
+    try {
+        const response = await adminAxiosInstance.get(`getCoupons`)
+        return response;
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+const bookingAdmin = async()=>{
+    try {
+        const response = await adminAxiosInstance.get(`bookingAdmin`)
+        return response;
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+const singleOrderDetails =async(id)=>{
+    try {
+        const response = await adminAxiosInstance.get(`singleOrderDetails?id=${id}`)
+        return response;
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 export{
     login,
     bikeDetails,
@@ -91,5 +125,9 @@ export{
     findPartner,
     partnerBlocking,
     userDetails,
-    userBlocking
+    userBlocking,
+    addCoupon,
+    getCoupons,
+    bookingAdmin,
+    singleOrderDetails
 }

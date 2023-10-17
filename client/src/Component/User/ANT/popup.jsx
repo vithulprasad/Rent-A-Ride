@@ -45,17 +45,23 @@ const [popup,setPopup] = useState(false)
           </div>
           <br />
           <div className='flex justify-around'>
-            <button className="bg-red-400  text-white font-bold px-5 py-2 rounded focus:outline-none shadow hover:bg-red-700 transition-colors" onClick={() => {
+            <button className="  text-black font-bold w-full py-2 rounded focus:outline-none shadow hover:bg-blue-700 transition-colors" onClick={()=>{navigate('/profile')}} style={{boxShadow:" inset 0 -3em 3em rgba(0, 0, 0, 0.1),0 0 0 2px rgb(255, 255, 255),0.3em 0.3em 1em rgba(0, 0, 0, 0.3)"}}>View Profile</button>
+          </div>
+          <br />
+     
+          <div className='flex justify-center'>
+            <button onClick={()=>{navigate("/myRide")}} className="   text-black font-bold w-full py-2 rounded focus:outline-none shadow hover:bg-blue-700 transition-colors" style={{boxShadow:" inset 0 -3em 3em rgba(0, 0, 0, 0.1),0 0 0 2px rgb(255, 255, 255),0.3em 0.3em 1em rgba(0, 0, 0, 0.3)"}}>My Ride</button>
+          </div>
+          <br />
+          <div className='flex justify-center'>
+            <button className=" text-black font-bold w-full py-2 rounded focus:outline-none shadow hover:bg-blue-700 transition-colors"style={{boxShadow:" inset 0 -3em 3em rgba(0, 0, 0, 0.1),0 0 0 2px rgb(255, 255, 255),0.3em 0.3em 1em rgba(0, 0, 0, 0.3)"}} onClick={()=>{navigate('/profile')}}>Wallet</button>
+          </div>
+          <br />
+          <div className='flex justify-center'>
+          <button className=" text-black font-bold w-full py-2 rounded focus:outline-none shadow hover:bg-red-700 transition-colors"style={{boxShadow:" inset 0 -3em 3em rgba(0, 0, 0, 0.1),0 0 0 2px rgb(255, 255, 255),0.3em 0.3em 1em rgba(0, 0, 0, 0.3)"}} onClick={() => {
               localStorage.removeItem('information');
               logout();
             }}>Logout</button>
-
-            <button className="bg-blue-500  text-white font-bold px-5 py-2 rounded focus:outline-none shadow hover:bg-blue-700 transition-colors" onClick={()=>{navigate('/profile')}}>View Profile</button>
-          </div>
-          <br />
-
-          <div className='flex justify-center'>
-            <button className="bg-green-400  text-white font-bold px-5 py-2 rounded focus:outline-none shadow hover:bg-blue-700 transition-colors">Wallet</button>
           </div>
           <br />
           <div>

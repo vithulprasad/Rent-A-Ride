@@ -3,10 +3,7 @@ import { adminApi,userApi,partnerApi } from './api'
 
 
 const TIMEOUT_DURATION = 110000;
-const createAxiosInstanceWithInterceptorUser=(baseURL,tokenName)=>{
-
-    console.log(baseURL,"llllllllllllllllllll------------------BaseURl");
-    console.log(tokenName,"llllllllllllllllll-------------------Token NAme");
+const createAxiosInstanceWithInterceptorUser=(baseURL)=>{
 
     const instance =axios.create({
         baseURL:baseURL,
@@ -49,10 +46,8 @@ const createAxiosInstanceWithInterceptorUser=(baseURL,tokenName)=>{
     return instance
 }
 
-const createAxiosInstanceWithInterceptorPartner=(baseURL,tokenName)=>{
+const createAxiosInstanceWithInterceptorPartner=(baseURL)=>{
 
-    console.log(baseURL,"llllllllllllllllllll------------------BaseURl");
-    console.log(tokenName,"llllllllllllllllll-------------------Token NAme");
 
     const instance =axios.create({
         baseURL:baseURL,
@@ -95,10 +90,9 @@ const createAxiosInstanceWithInterceptorPartner=(baseURL,tokenName)=>{
     return instance
 }
 
-const createAxiosInstanceWithInterceptorAdmin=(baseURL,tokenName)=>{
+const createAxiosInstanceWithInterceptorAdmin=(baseURL)=>{
 
-    console.log(baseURL,"llllllllllllllllllll------------------BaseURl");
-    console.log(tokenName,"llllllllllllllllll-------------------Token NAme");
+
 
     const instance =axios.create({
         baseURL:baseURL,

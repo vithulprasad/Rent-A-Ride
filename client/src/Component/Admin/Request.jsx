@@ -7,6 +7,8 @@ import PropTypes from 'prop-types';
 import {RequestDetails} from '../../Apis/connections/admin'
 import {accessConfirmation} from '../../Apis/connections/admin'
 import {rejectedNow} from '../../Apis/connections/admin'
+import RequestDetailse from "./RequestDetails";
+import Loading from '../../Component/Loading/loading'
 
 
 
@@ -16,6 +18,8 @@ import {rejectedNow} from '../../Apis/connections/admin'
 
 
 function Request({sendDataToParent}) {
+  const [loading,setLoading] = useState(false)
+const [page,setPage ]= useState(false)
   const [open, setOpen] = useState(false);
   const [users, setUsers] = useState([]);
   const [refresh,setRefresh] = useState("")
@@ -23,11 +27,14 @@ function Request({sendDataToParent}) {
   const [email,setEmail] = useState('')
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
+  const [information,setInformation] = useState({})
 
   useEffect(() => {
+    setLoading(true)
     RequestDetails().then((res) => {
       if (res.data.success === true) {
         setUsers(res.data.request);
+        setLoading(false)
       }else{
         toast.success('something went wrong')
       }
@@ -36,11 +43,13 @@ function Request({sendDataToParent}) {
  
 
   const handleAccept =(email)=>{
+    setLoading(true)
     accessConfirmation(email).then((res)=>{
        if(res.data.success===true){
         setRefresh(res.data.email)
         toast.success(" requset accept new parter wer added")
         sendDataToParent()
+        setLoading(false)
        }else{
         toast.error("something went wrong try again")
        }
@@ -48,6 +57,7 @@ function Request({sendDataToParent}) {
   }
 
   const onFinish = (values) => {
+    setLoading(true)
     const datas={
       data:values,
       email:email
@@ -59,6 +69,7 @@ function Request({sendDataToParent}) {
              sendDataToParent()
              setRefresh('force refresh')
              messageApi.destroy
+             setLoading(false)
           }else{
             toast.error("something went wrong!")
           }
@@ -73,13 +84,27 @@ function Request({sendDataToParent}) {
     });
   
   };
+
+  const setDetails = (id) =>{
+    console.log(id,'----');
+    console.log(users,'----');
+    const data = users.find((value)=>{return value._id == id})
+    console.log(data,'-----d-----');
   
+    setInformation(data)
+   
+  }
+  const request = ()=>{
+    setPage(false)
+  }
    
 
   return (
 <Fragment>
+{loading ? (<Loading/>) : (<>
   { users.length > 0 ?
     <div className="overflow-hidden rounded-lg border border-gray-200 shadow-md m-5">
+{page == false ? 
       <table className="w-full border-collapse bg-white text-left text-sm text-gray-500">
         <thead className="bg-gray-50">
           <tr>
@@ -127,14 +152,14 @@ function Request({sendDataToParent}) {
             <td className="px-6 py-4">
               <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-1 text-xs font-semibold text-green-600">
                 <span className="h-1.5 w-1.5 rounded-full bg-green-600"></span>
-           Requests
+                Requests
               </span>
             </td>
           
             <td className="px-6 py-4">{user.company}</td>
             <td className="px-6 py-4">
-              <div className="flex gap-2">
-               <button className="bg-amber-800   h-[30px] text-white text-center font-mono px-5  rounded focus:outline-none shadow hover:bg-yellow-700 transition-colors">details</button>
+              <div className="flex gap-2" onClick={()=>{setPage(true)}}>
+                 <button onClick={()=>{setDetails(user._id)}}  className="bg-amber-800   h-[30px] text-white text-center font-mono px-5  rounded focus:outline-none shadow hover:bg-yellow-700 transition-colors" >details</button>
               </div>
             </td>
             <td className="px-6 py-4">
@@ -229,8 +254,13 @@ function Request({sendDataToParent}) {
           )}
         </tbody>
       </table>
-    </div>:<Empty/>
+
+    :<RequestDetailse Request={request} data={information}/> }
+    </div>
+    :<Empty/>
 }
+</>)}
+ 
     </Fragment>
   );
 }

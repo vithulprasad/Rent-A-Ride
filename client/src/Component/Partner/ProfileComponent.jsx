@@ -2,8 +2,12 @@ import { useSelector } from "react-redux";
 import { PartnerDetails } from "../../Apis/connections/partner";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import Loading from '../../Component/Loading/loading'
+
+
 
 function ProfileComponent() {
+  const [loading,setLoading] = useState(true)
   const [image, setImage] = useState("");
   const [partnerInformation, setPartnerInformation] = useState({
     name: "no data",
@@ -30,17 +34,17 @@ function ProfileComponent() {
       await PartnerDetails(partner).then((res) => {
         if (res.data.success === true) {
           const partner = res.data.partner;
-          console.log(partner);
+          
           setPartnerInformation({
             name: partner.name,
             phone: partner.phone,
-            age: partner.address[0].age,
+            age: partner.address.age,
             companyName: partner.company,
-            area: partner.address[0].localArea,
-            post: partner.address[0].post,
-            pin: partner.address[0].pin,
-            district: partner.address[0].district,
-            state: partner.address[0].state,
+            area: partner.address.localArea,
+            post: partner.address.post,
+            pin: partner.address.pin,
+            district: partner.address.district,
+            state: partner.address.state,
             email: partner.email,
             gender: partner.gender
           });
@@ -52,6 +56,7 @@ function ProfileComponent() {
               `https://i.pinimg.com/564x/cf/c8/a7/cfc8a77cecf698e50890d8ab4a566e34.jpg`
             );
           }
+          setLoading(false)
          
         } else {
           toast.error("something went wrong in getData");
@@ -64,7 +69,8 @@ function ProfileComponent() {
   
   return (
     <div className="w-full h-[600px] flex">
-         <div className='w-[20%] h-full p-2'>
+        {loading ? (<Loading/>) : (<>
+          <div className='w-[20%] h-full p-2'>
             <div className='w-full h-full flex  flex-col '>
               <div className='w-full flex justify-center pt-2'>
                 <div className='w-[180px] h-[180px] p-1 border border-black' style={{boxShadow:" inset 0 -3em 3em rgba(0, 0, 0, 0.1),0 0 0 2px rgb(255, 255, 255),0.3em 0.3em 1em rgba(0, 0, 0, 0.3)"}}>
@@ -184,6 +190,8 @@ function ProfileComponent() {
                 </div>
            </div>
         </div>
+        </>)}
+
     </div>
   )
 }

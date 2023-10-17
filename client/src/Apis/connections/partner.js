@@ -79,7 +79,38 @@ const NavDetails = async()=>{
         console.log(error.message);
     }
 }
-
+const partnerBookings = async()=>{
+    try {
+        const response = await partnerAxiosInstance.get('partnerBookings')
+        return response
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+const unlist = async(id)=>{
+    try {
+        const response = await partnerAxiosInstance.get(`unlist?id=${id}`)
+        return response
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+const list = async(id)=>{
+    try {
+        const response = await partnerAxiosInstance.get(`list?id=${id}`)
+        return response
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+const completeBooking = async(id)=>{
+    try {
+        const response = await partnerAxiosInstance.get(`completeBooking?id=${id}`)
+        return response
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 export{
     partnerLogin,
     PartnerDetails,
@@ -89,6 +120,10 @@ export{
     EditBike,
     AddBikes,
     listBike,
-    NavDetails
+    NavDetails,
+    partnerBookings,
+    unlist,
+    list,
+    completeBooking
  
 }

@@ -6,12 +6,13 @@ import { partnerEdit } from "../../Apis/connections/partner";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import Loading from '../../Component/Loading/loading'
 
 function EditProfile() {
   const [fileList, setFileList] = useState([]);
   const [image, setImage] = useState("");
   const isUploadingRef4 = useRef(1);
-
+  const [loading,setLoading] = useState(false)
 const [name,setName] = useState('no data')
 const [phone,setPhone] = useState('no data')
 const [age,setAge] = useState('no data')
@@ -30,21 +31,22 @@ const [state,setState] = useState('no data')
   }, []);
 
   const getData = async () => {
+    setLoading(true)
     try {
       await PartnerDetails(partner).then((res) => {
         if (res.data.success === true) {
           const partner = res.data.partner;
-          console.log(partner);
+       
       
           setName(partner.name)
           setPhone(partner.phone)
-          setAge(partner.address[0].age)
+          setAge(partner.address.age)
           setCompanyName(partner.company)
-          setArea(partner.address[0].localArea)
-          setPost( partner.address[0].post)
-          setPin(partner.address[0].pin)
-          setDistrict(partner.address[0].district)
-          setState( partner.address[0].state)
+          setArea(partner.address.localArea)
+          setPost( partner.address.post)
+          setPin(partner.address.pin)
+          setDistrict(partner.address.district)
+          setState( partner.address.state)
           if (partner.image) {
             setImage(partner.image);
           } else {
@@ -52,7 +54,7 @@ const [state,setState] = useState('no data')
               `https://i.pinimg.com/564x/cf/c8/a7/cfc8a77cecf698e50890d8ab4a566e34.jpg`
             );
           }
-          
+          setLoading(false)
         } else {
           toast.error("something went wrong in getData");
         }
@@ -85,7 +87,7 @@ const [state,setState] = useState('no data')
         );
 
         const imageUrl = res.data.secure_url;
-        console.log(imageUrl);
+      
 
         setImage(`${imageUrl}`);
         toast.success("image added successfully");
@@ -106,7 +108,7 @@ const [state,setState] = useState('no data')
       post:post,
       pin:pin, 
     }
-    console.log("dfasdfsda");
+   
     await partnerEdit({
       information: data,
       image: image,
@@ -125,7 +127,8 @@ const [state,setState] = useState('no data')
   };
   return (
     <div className="w-full h-[600px] flex">
-      <div className="w-[20%] h-full p-2">
+      {loading ? (<Loading/>) : (<>
+        <div className="w-[20%] h-full p-2">
         <div className="w-full h-full flex  flex-col ">
           <div className="w-full flex justify-center pt-2">
             <div
@@ -323,6 +326,8 @@ const [state,setState] = useState('no data')
           </form>
         </div>
       </div>
+      </>)}
+     
     </div>
   );
 }

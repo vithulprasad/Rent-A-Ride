@@ -32,7 +32,7 @@ function EditProfileComponent({ sendDataToParent }) {
   const [district, setDistrict] = useState("no Data");
   const [street, setStreet] = useState("no Data");
   const [post, setPost] = useState("no Data");
-  const [pin, setPin] = useState("no Data");
+  const [pin, setPin] = useState(0);
 
   const isUploadingRef = useRef(false);
   const isUploadingRef1 = useRef(false);
@@ -287,12 +287,13 @@ function EditProfileComponent({ sendDataToParent }) {
                   listType="picture-card"
                   fileList={fileList1}
                   onChange={onChange1}
+                
                 >
                   {fileList1.length < 1 && "+ Upload"}
                 </Upload>
               </ImgCrop>
             </div>
-            <div className="w-[70%] h-46 pb-5 p-3 border border-black">
+            <div className="w-[70%] h-46 pb-5 p-2  pr-0 font-mono ">
               <div className="h-[19px] w-[100%] flex justify-center items-center font-mono font-bold ">
                 <h1>Address</h1>
               </div>
@@ -339,7 +340,7 @@ function EditProfileComponent({ sendDataToParent }) {
                     <input
                       value={pin}
                       onChange={(e) => setPin(e.target.value)}
-                      type="text"
+                      type="number"
                       className="border border-black font-mono font-bold"
                       name="pin"
                     />{" "}

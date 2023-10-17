@@ -1,7 +1,8 @@
 import { Carousel } from "antd";
+import { useNavigate } from "react-router-dom";
 
 function Banner() {
-
+const navigate = useNavigate()
 
   return (
     <div className="p-3 w-[1100px]">
@@ -22,7 +23,7 @@ function Banner() {
                   <h1 className="font-mono font-bold">Rent a bike now for Riding in the road</h1>
                 </div>
                 <div>
-                <button  className="bg-green-700  text-white font-bold px-12 mt-8 py-2 rounded focus:outline-none shadow hover:bg-blue-700 transition-colors" >Order Now</button>
+                <button  className="bg-green-700  text-white font-bold px-12 mt-8 py-2 rounded focus:outline-none shadow hover:bg-blue-700 transition-colors"  onClick={()=>{navigate('/bikeCollection')}}>Order Now</button>
                 </div>
             </div>
           </div>
@@ -63,7 +64,7 @@ function Banner() {
                   <h1 className="font-mono font-bold">Dont miss the discounts rent a product make you happy</h1>
                 </div>
                 <div>
-                <button  className="bg-green-700  text-white font-bold px-12 mt-8 py-2 rounded focus:outline-none shadow hover:bg-blue-700 transition-colors" >Go TO Products</button>
+                <button  className="bg-green-700  text-white font-bold px-12 mt-8 py-2 rounded focus:outline-none shadow hover:bg-blue-700 transition-colors" onClick={()=>{navigate('/bikeCollection')}}>Go TO Products</button>
                 </div>
             </div>
           </div>
@@ -82,7 +83,7 @@ function Banner() {
                   <h1 className="font-mono font-bold">Try now and make your self happy to simple to join</h1>
                 </div>
                 <div>
-                <button  className="bg-green-700  text-white font-bold px-12 mt-8 py-2 rounded focus:outline-none shadow hover:bg-blue-700 transition-colors" >Join As A Partner</button>
+                <button  className="bg-green-700  text-white font-bold px-12 mt-8 py-2 rounded focus:outline-none shadow hover:bg-blue-700 transition-colors"  onClick={()=>{navigate('/joinCompany')}}>Join As A Partner</button>
                 </div>
             </div>
           </div>

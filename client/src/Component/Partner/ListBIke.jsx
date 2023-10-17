@@ -3,9 +3,12 @@ import {listBike} from '../../Apis/connections/partner'
 import { useSelector } from "react-redux"
 import toast from "react-hot-toast";
 import  "../Partner/ANT/ANT.css"
-
+import Loading from '../../Component/Loading/loading'
+import {unlist}  from '../../Apis/connections/partner'
 
 function ListBike() {
+  const [loading,setLoading] = useState(true)
+  const [refresh,setRefresh] = useState(true)
   const partner = useSelector((state) => {
     return state.partnerAuth.PartnerToken;
   });
@@ -18,17 +21,42 @@ function ListBike() {
    await listBike().then((res) => {
         if (res.data.success) {
           setBike(res.data.bikes);
+          setLoading(false)
         } else {
           toast.error("Something went wrong");
         }
       });
     }
     listedBike()
-  }, [partner]);
+  }, [partner,refresh]);
+
+
+  const unlistHandler=(id)=>{
+    unlist(id)
+    .then((res)=>{
+      if(res.data.success===true){
+        if(res.data.message=="the bike was booked"){
+          toast.error("cannot unlist ! bike in the users hand")
+        }else{
+          toast.success("unlisted successfully")
+        }
+        if(refresh === true){
+          setRefresh(false);
+        }else{
+          setRefresh(false)
+        }
+    
+      }else{
+        toast.error('something went wrong in unlisting')
+      }
+     
+    })
+  }
 
   return (
     <div className="p-6">
-      <div className="grid grid-cols-3 gap-4">
+      {loading ? (<Loading/>) : (<>
+        <div className="grid grid-cols-3 gap-4">
         {bike.length > 0 ? (
           bike.map((data) =>
             data.requestStatus === "completed" && data.available===true ? (
@@ -61,11 +89,11 @@ function ListBike() {
                 </div>
                 <div>
                   <h1 className="font font-semibold font-mono">
-                    RentPer:<span className="ml-10">{data.rentPerHour}</span>
+                    RentPer:<span className="ml-10"><i className="icon  rupee sign "></i>{data.rentPerHour}</span>
                   </h1>
                 </div>
                 <div className="flex justify-around">
-                  <button className="bg-cyan-500 text-white font-mono font-semibold px-5 py-2 rounded focus:outline-none shadow hover:bg-cyan-900 transition-colors">
+                  <button onClick={()=>{unlistHandler(data._id)}} className="bg-cyan-500 text-white font-mono font-semibold px-5 py-2 rounded focus:outline-none shadow hover:bg-cyan-900 transition-colors">
                     Unlist
                   </button>
                   <button className="bg-green-500 text-white font-mono font-semibold px-5 py-2 rounded focus:outline-none shadow hover:bg-green-700 transition-colors">
@@ -93,6 +121,8 @@ function ListBike() {
           </div>
         )}
       </div>
+      </>)}
+     
     </div>
   );
   

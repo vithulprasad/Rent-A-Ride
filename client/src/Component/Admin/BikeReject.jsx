@@ -2,8 +2,15 @@ import {  Table,Button } from 'antd';
 import {bikeDetails} from '../../Apis/connections/admin'
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import Loading from '../../Component/Loading/loading'
+
+
+
 
 function BikeManagement() {
+
+const [loading,setLoading] = useState(false)
+
     const purchaseDetails = (name)=>{
           console.log(name);
     }
@@ -69,6 +76,7 @@ function BikeManagement() {
     const [bikes,setBikes] = useState()
     useEffect(()=>{
         const getBikes=async()=>{
+          setLoading(true)
             await bikeDetails().then((res)=>{
                 if(res.data.success===true){
                     const data= res.data.bikes
@@ -77,6 +85,7 @@ function BikeManagement() {
                     })
                     console.log(data);
                     setBikes(newData)
+                    setLoading(false)
                 }else{
                     toast.error("something went wrong!")
                 }
@@ -87,7 +96,8 @@ function BikeManagement() {
     },[])
   return (
     <div>
-         <Table columns={columns} dataSource={bikes} />
+      {loading ? (<Loading/>) : (<>  <Table columns={columns} dataSource={bikes} /></>)}
+       
     </div>
   )
 }

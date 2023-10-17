@@ -1,7 +1,7 @@
    import { Fragment, useEffect } from 'react'
    import PropTypes from 'prop-types';
    import LoginPage from '../../Component/User/Login' 
-import { useNavigate } from 'react-router-dom'
+   import { useNavigate } from 'react-router-dom'
     
     function Login({authorized}) {
       const navigate= useNavigate()

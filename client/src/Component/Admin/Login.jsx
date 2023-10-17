@@ -28,7 +28,6 @@ function Login() {
      await login(data).then((res)=>{
       if(res.data.success===true){
         let information = res.data.obj
-        console.log(information,"this is the data ");
         localStorage.setItem('adminInformation', JSON.stringify(res.data.obj));
         dispatch(adminDetails(information))
         navigate('/admin')
@@ -37,7 +36,7 @@ function Login() {
         toast.error("data was not found")
       }
      })
-    console.log(data);
+    
   };
 
   // ####################################################################################################################################

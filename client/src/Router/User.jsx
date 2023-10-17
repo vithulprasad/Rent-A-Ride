@@ -13,6 +13,13 @@ import Join from '../Pages/User/Join';
 import { useEffect } from 'react';
 import BikePage from '../Pages/User/bikePage';
 import ProfilePage from '../Pages/User/ProfilePage';
+import Order from '../Pages/User/OrderPage';
+import Success from '../Pages/User/success';
+import Failure from '../Pages/User/failure';
+import MyRide from '../Pages/User/MyRide';
+import Offer from '../Pages/User/OfferPage';
+import Tariff from '../Pages/User/Tariff';
+import ChatPage from '../Pages/User/ChatPage';
 // --------------------------------error boundery set up --------------------------------//
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -82,6 +89,11 @@ const dispatch = useDispatch()
             element={ <OtpPage authorized={user}  />}
           />
           <Route
+            path="/order"
+            exact
+            element={ <Order authorized={user}  />}
+          />
+          <Route
             path="/joinCompany"
             exact
             element={<Join />}
@@ -96,7 +108,38 @@ const dispatch = useDispatch()
             exact
             element={<ProfilePage authorized={user} />}
           />
+             <Route
+            path="/success"
+            exact
+            element={<Success />}
+          />
+             <Route
+            path="/cancel"
+            exact
+            element={<Failure />}
+          />
+          <Route
+            path="/myRide"
+            exact
+            element={<MyRide authorized={user} />}
+          />
+        <Route
+            path="/offers"
+            exact
+            element={<Offer />}
+          />
+        <Route
+            path="/tariff"
+            exact
+            element={<Tariff />}
+          />
+           <Route
+            path="/chat"
+            exact
+            element={<ChatPage authorized={user} />}
+          />
         </Routes>
+       
       </ErrorBoundary>
     </div>
   );

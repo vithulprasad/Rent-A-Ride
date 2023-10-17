@@ -1,20 +1,27 @@
-import { Table, Button,Drawer,Input } from "antd";
+import { Table, Button,Drawer,Input,Modal } from "antd";
 import { bikeDetails } from "../../Apis/connections/admin";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Popconfirm } from "antd";
 import {partnerBikeReject} from '../../Apis/connections/admin'
+import Loading from '../../Component/Loading/loading'
+import PropTypes from 'prop-types';
+
 
 function BikeManagement({requested}) {
+  const [loading,setLoading] = useState(false)
+const [single,setSingle] = useState({})
   const [open, setOpen] = useState(false);
   const [message,setMessage] = useState('');
   const [id,setId] = useState('');
   const [again,setAgain] = useState(false);
   const purchaseDetails = (id) => {
     toast.success(`details${id}`);
+    setIsModalOpen(true);
   };
 
   const AcceptHandler = async(id) => {
+    setLoading(true)
     toast.success(`accepted${id}`);
     const data ={
       bikeId:id,
@@ -31,6 +38,7 @@ function BikeManagement({requested}) {
         }
         setOpen(false);
         requested("dafadfe")
+        setLoading(false)
       }else{
         toast.error('something went wrong')
       }
@@ -41,15 +49,23 @@ function BikeManagement({requested}) {
     setId(id)
     setOpen(true);
   };
-
+    const [isModalOpen, setIsModalOpen] = useState(false);
+  
+    const handleOk = () => {
+      setIsModalOpen(false);
+    };
+    const handleCancel = () => {
+      setIsModalOpen(false);
+    };
 const sent =async()=>{
-    
+  setLoading(true)
      const data ={
       bikeId:id,
       message:message,
       type:"rejected"
      }
      await partnerBikeReject(data).then((res)=>{
+     
       if(res.data.success===true){
         toast.success('updated successfully')
         setMessage("")
@@ -60,11 +76,13 @@ const sent =async()=>{
         }
         requested()
         setOpen(false);
+        setLoading(false)
       }else{
         toast.error('something went wrong')
       }
      })
 }
+
 
   const { TextArea } = Input;
 
@@ -94,16 +112,35 @@ const sent =async()=>{
       dataIndex: "_id",
       key: "BrandName",
       width: 200,
-      render: (data) => (
+      render: (data,text) => (
         <h1 className="font-mono font-bold">
           <Button
             onClick={() => {
-              purchaseDetails(data);
+              purchaseDetails(text);
             }}
           >
             {" "}
             Details
           </Button>
+          <Modal width={600} title="Basic Modal" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+            <div className="w-[200px] h-40 flex justify-center items-center">
+              {console.log(text.image)}
+              {text.image.length > 0 ? text.image.map((value,index)=>(<div key={index} className="w-[150px] h-[150px]" style={{backgroundImage:`url(${value})`,backgroundRepeat:"no-repeat",backgroundSize:"contain"}}>
+
+</div> )) :null}
+                 
+            </div>
+        <p> Bike Name :<span className="font-mono font-bold ">{text.name}</span></p>
+        <p> BrandName  :<span className="font-mono font-bold ">{text.BrandName}</span></p>
+        <p>Rent per day :<span className="font-mono font-bold ">{text.rentPerHour}</span></p>
+        <p>Category :<span className="font-mono font-bold ">{text.NormalCategory}</span></p>
+        <p>cc :<span className="font-mono font-bold ">{text.cc}</span></p>
+        <p>PlateNumber :<span className="font-mono font-bold ">{text.PlateNumber}</span></p>
+        <p>companyName :<span className="font-mono font-bold ">{text.companyName}</span></p>
+        <p>owner Name :<span className="font-mono font-bold ">{text.partnerId.name}</span></p>
+
+
+      </Modal>
         </h1>
       ),
     },
@@ -141,8 +178,8 @@ const sent =async()=>{
       render: (record) => (
         <div>
           <Popconfirm
-            title="Delete the task"
-            description="Are you sure to delete this task?"
+            title="Are you sure "
+            description="Are you sure to accept the request?"
             onConfirm={() => AcceptHandler(record)}
             onCancel={()=>{message.error("Cancel")}}
             okText="Yes"
@@ -151,8 +188,8 @@ const sent =async()=>{
             <Button className="bg-lime-400 font-mono">Accept</Button>
           </Popconfirm>
           <Popconfirm
-            title="Delete the task"
-            description="Are you sure to delete this task?"
+            title="take an action "
+            description="Are you sure to take the action ?"
             onConfirm={() => RejectHandler(record)}
             onCancel={()=>{message.error("cancel");  setOpen(false);}}
             okText="Yes"
@@ -178,6 +215,7 @@ const sent =async()=>{
   const [bikes, setBikes] = useState();
   useEffect(() => {
     const getBikes = async () => {
+      setLoading(true)
       await bikeDetails().then((res) => {
         if (res.data.success === true) {
           const data = res.data.bikes;
@@ -189,6 +227,7 @@ const sent =async()=>{
           });
           console.log(data);
           setBikes(newData);
+          setLoading(false)
         } else {
           toast.error("something went wrong!");
         }
@@ -198,9 +237,14 @@ const sent =async()=>{
   }, [again]);
   return (
     <div>
-      <Table columns={columns} dataSource={bikes} />
+      {loading ? (<Loading/>) : (<> <Table columns={columns} dataSource={bikes} /></>)}
+     
     </div>
   );
 }
+BikeManagement.propTypes = {
+  requested: PropTypes.func.isRequired,
+  authorized: PropTypes.bool.isRequired, 
+};
 
 export default BikeManagement;

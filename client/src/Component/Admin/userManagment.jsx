@@ -2,8 +2,11 @@ import { Space, Table,Button ,Popconfirm,message } from 'antd';
 import { useEffect, useState } from 'react';
 import {userDetails} from '../../Apis/connections/admin'
 import {userBlocking} from '../../Apis/connections/admin'
-
 import toast from 'react-hot-toast';
+import Loading from '../../Component/Loading/loading'
+import Details from '../Admin/userInfromation/details'
+import  Order from  '../Admin/userInfromation/order'
+
 const { Column, ColumnGroup } = Table;
 
 
@@ -13,50 +16,42 @@ const { Column, ColumnGroup } = Table;
 
 
 function UserManagment() {
+  const [loading,setLoading] = useState(false)
+  const [page,setPage] = useState('current')
    const [user,setUser] =useState([])
    const [block,setBlock] = useState(false)
+   const [details,setDetails] =useState({})
 
 useEffect(()=>{
+  setLoading(true)
     console.log("working..");
     userDetails().then((res)=>{
     console.log(res.data.userData);
     if(res.data.success===false){
        toast.error("something went wrong !")
     }else{
+      setLoading(false)
         setUser(res.data.userData)
     }
    })
 },[block])
 
   
-const purchaseDetails=(email)=>{
-    try {
-        toast.success(`purchase details of${email}`)
-    } catch (error) {
-        toast.error("something went wrong !")
-    }
-}
-const addressInformation =(email)=>{
-    try {
-        toast.success(`address information of ${email}`)
-    
-    } catch (error) {
-        toast.error("something went wrong !")
-    }
-}
+
 const blockingUser =(email)=>{
+  setLoading(true)
     try {
       userBlocking(email).then((res)=>{
             if(res.data.success===true){
-                console.log(res.data.blockedUser);
                 if(res.data.blockedUser===true){
+                
                     toast.success('user Is blocked')
                     if(block==true){
                         setBlock(false)
                     }else{
                         setBlock(true)
                     }
-                    
+                    setLoading(false)
                    
                 }else{
                     toast.success('user Is unblocked successfully')
@@ -65,6 +60,7 @@ const blockingUser =(email)=>{
                     }else{
                         setBlock(true)
                     }
+                    setLoading(false)
                 }
                 
             }else{
@@ -77,12 +73,24 @@ const blockingUser =(email)=>{
         toast.error("something went wrong !")
     }
 }
+const changePage = (x)=>{
+  setDetails(x)
+  console.log(details);
+}
+const handlePage =()=>{
+  setPage('current')
+}
+
 return (
     <>
+    {
+      page == "current" ?
+   <>
     <div className='mb-10'>
        <h1>User Management</h1> 
     </div>
-    <Table dataSource={user}>
+    {loading ? (<Loading/>) : (<>
+      <Table dataSource={user}>
          <Column title="Role" key="Role" render={(record) => (
           <div className='w-[100px] h-[35px] pt-2 bg-slate-100 text-lime-900 text-center rounded-sm'>
          
@@ -98,9 +106,9 @@ return (
         
       </ColumnGroup>
       <Column title="Purchases" dataIndex="Purchases" key="Purchases"render={(text, record) => (
-          <div>
+          <div onClick={()=>{setPage('order')}}>
             {text}
-            <Button className='bg-lime-400' onClick={() => purchaseDetails(record.email)}>Order info</Button>
+            <Button className='bg-lime-400' onClick={() => changePage(record)}>Order info</Button>
           </div>
         )} />
      
@@ -108,9 +116,9 @@ return (
         title="details"
       
         key="address"
-        render={(record) => (
-          <div>
-            <Button className='bg-amber-300' onClick={() => addressInformation(record.email)}>view Details</Button>
+        render={(record,text) => (
+          <div onClick={()=>{setPage('details')}}>
+            <Button className='bg-amber-300' onClick={() => changePage(text)}>view Details</Button>
           </div>
         )}
       />
@@ -138,6 +146,12 @@ return (
         )}
       />
     </Table>
+ 
+    </>)}
+    </>
+ :null }
+ {page == "details" ? <Details page={()=>{handlePage()}} data={details}/> :null}
+ {page == "order" ? <Order page={()=>{handlePage()}} data={details}/> :null}
     </>
   );
 }

@@ -5,10 +5,13 @@ import BikeList from "../../Component/User/BikeList"
 
 
 function bikePage() {
+  
   return (
     <Fragment>
         <Navbar/>
-         <BikeList/>
+        
+           <BikeList/>
+     
         <Footer/>
     </Fragment>
   )
