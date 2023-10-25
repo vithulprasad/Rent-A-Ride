@@ -4,8 +4,10 @@ import { useDispatch } from "react-redux";
 import { partnerDetails } from "../../Redux/storeSlices/PartnerAuth";
 import { partnerLogin } from "../../Apis/connections/partner";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 function Login() {
   // FOR HANDLING EYE VISIBILITY
+  const navigate = useNavigate()
   const [passwordVisible, setPasswordVisible] = useState(false);
   const dispatch = useDispatch();
   const {
@@ -129,6 +131,12 @@ function Login() {
                 className="inline-block text-blue-500 hover:text-blue-800 hover:underline"
               >
                 Forget password
+              </a>
+              <a
+                onClick={()=>{navigate('/admin/login')}}
+                className="inline-block text-blue-500 hover:text-blue-800 hover:underline"
+              >
+                Admin Login
               </a>
               <button
                 type="submit"
