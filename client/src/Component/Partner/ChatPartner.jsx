@@ -17,7 +17,7 @@ function ChatPartner() {
   const [loading,setLoading] = useState(false)
   const [message, setMessage] = useState('');
   const [details,setDetails] = useState({})
-  const socket = io('http://localhost:4000');
+  const socket = io('https://rent-a-ride-ten.vercel.app');
   const chatContainerRef = useRef(null);
 
 

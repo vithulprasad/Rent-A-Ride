@@ -14,7 +14,7 @@ function Chat() {
   const [loading,setLoading] = useState(false)
   const changeRef = useRef(null); // Ref attached to the chat container
   const location = useNavigate();
-  const socket = io('http://localhost:4000');
+  const socket = io('https://rent-a-ride-ten.vercel.app');
 
  
 
