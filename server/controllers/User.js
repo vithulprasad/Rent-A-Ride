@@ -487,8 +487,8 @@ exports.checkout=async(req,res)=>{
         },
       ],
       mode: 'payment',
-      success_url: 'http://localhost:3000/success',
-      cancel_url: 'http://localhost:3000/cancel',
+      success_url: 'https://rent-a-ride-ten.vercel.app/success',
+      cancel_url: 'https://rent-a-ride-ten.vercel.app/cancel',
     });
     const date={
       startDate:data.startDate,
