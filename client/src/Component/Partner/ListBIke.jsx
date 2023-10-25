@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import  "../Partner/ANT/ANT.css"
 import Loading from '../../Component/Loading/loading'
 import {unlist}  from '../../Apis/connections/partner'
+import {  Modal } from 'antd';
 
 function ListBike() {
   const [loading,setLoading] = useState(true)
@@ -52,7 +53,17 @@ function ListBike() {
      
     })
   }
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
   return (
     <div className="p-6">
       {loading ? (<Loading/>) : (<>
@@ -96,9 +107,28 @@ function ListBike() {
                   <button onClick={()=>{unlistHandler(data._id)}} className="bg-cyan-500 text-white font-mono font-semibold px-5 py-2 rounded focus:outline-none shadow hover:bg-cyan-900 transition-colors">
                     Unlist
                   </button>
-                  <button className="bg-green-500 text-white font-mono font-semibold px-5 py-2 rounded focus:outline-none shadow hover:bg-green-700 transition-colors">
+                  <button onClick={()=>{setIsModalOpen(true)}} className="bg-green-500 text-white font-mono font-semibold px-5 py-2 rounded focus:outline-none shadow hover:bg-green-700 transition-colors">
                     Details
                   </button>
+                  <Modal title="Basic Modal" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+                    <div className="w-[300px]h-[300px]">
+                 
+                    <img
+                      className="w-full h-full object-cover"
+                      src={data.image[0]}
+                      alt="image"
+                    />
+                    </div>
+                    <p>name:{data.name}</p>
+                    <p>name:{data.BrandName}</p>
+                    <p>name:{data.rentPerHour}</p>
+                    <p>name:{data.NormalCategory}</p>
+                    <p>name:{data.cc}</p>
+                    <p>name:{data.companyName}</p>
+                    <p>name:{data.isBooked}</p>
+                  
+
+                  </Modal>
                 </div>
               </div>
             ) : null

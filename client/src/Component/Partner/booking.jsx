@@ -5,7 +5,6 @@ import{setBookingList,preBooking,ongoing,cancel,complete} from '../../Redux/stor
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Modal } from 'antd';
 import Loading from '../Loading/loading'
-import {  Result } from 'antd';
 
 function Booking() {
     const [loading,setLoading] = useState(false)

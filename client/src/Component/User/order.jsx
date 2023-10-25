@@ -13,7 +13,7 @@ import {listCoupons} from '../../Apis/connections/user'
 function Order() {
    const navigate = useNavigate()
     const [details,setDetails] = useState({})
-    const [helmet,setHelmet] = useState(1)
+    const [helmet,setHelmet] = useState(0)
     const [coupon,setCoupon] =useState(0)
     const [couponId,setCouponId] = useState(0)
    const [button,setButton] = useState(true)
@@ -215,7 +215,7 @@ const handleCancel = () => {
                         <div><h1>select Number Of Helmet (?)</h1></div>
                         <div>  
                         <Select
-                            defaultValue="1"
+                            defaultValue="0"
                             className="custom-select" // Add a custom class name here
                             style={{height:"30px"}}
                             dropdownStyle={{
@@ -226,13 +226,18 @@ const handleCancel = () => {
                             onChange={handleChange}
                             options={[
                                 {
+                                    value: 0,
+                                    label: '0',
+                                },
+                                {
                                     value: 1,
                                     label: '1',
                                 },
                                 {
                                     value: 2,
                                     label: '2',
-                                },
+                                }
+                               
                             ]}
                         />
                     </div>
@@ -277,7 +282,7 @@ const handleCancel = () => {
                    </div>
                    <div className="w-full h-12 flex justify-around">
                      <div className="w-[50%] flex justify-end"><h1 className="font-mono ">Helmet Amount</h1></div>
-                     <div className="font-mono font-bold flex justify-center w-[50%]"><i className="icon  rupee sign "></i>{helmet == 1 ? 50 : 100}</div>
+                     <div className="font-mono font-bold flex justify-center w-[50%]"><i className="icon  rupee sign "></i>{helmet == 0 ? 0 : null}{helmet == 1 ? 50 : null}{helmet == 2 ? 100 : null}</div>
                    </div>
                    <div className="w-full h-12 flex justify-around">
                      <div className="w-[50%] flex justify-end"><h1 className="font-mono fd">Refundable deposit</h1></div>
@@ -285,7 +290,7 @@ const handleCancel = () => {
                    </div>
                    <div className="w-full h-12 flex justify-around">
                      <div className="w-[50%] flex justify-end"><h1 className="font-mono ">Total Calculated</h1></div>
-                     <div className="font-mono font-bold flex justify-center w-[50%]"><i className="icon  rupee sign "></i>{helmet== 1 ? values.total+values.total+50-coupon: values.total+values.total+100-coupon}</div>
+                     <div className="font-mono font-bold flex justify-center w-[50%]"><i className="icon  rupee sign "></i>{helmet== 0 ? values.total+values.total-coupon:null }{helmet== 1 ? values.total+values.total+50-coupon:null }{helmet== 2 ? values.total+values.total+100-coupon:null }</div>
                    </div>
                    <div className="px-9 h-12">
                     {button1 ?<button className=" font-mono  text-lg btn w-[100%] h-10 bg-slate-250 rounded bg-green-500" onClick={payment}>Make payment</button>:<button className=" font-mono  text-lg btn w-[100%] h-10 bg-slate-250 rounded bg-green-200" disabled>...Processing </button> }

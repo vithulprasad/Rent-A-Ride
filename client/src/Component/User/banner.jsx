@@ -45,7 +45,7 @@ const navigate = useNavigate()
                   <h1 className="font-mono font-bold">Rent a bike now giving offers tryNow</h1>
                 </div>
                 <div>
-                <button  className="bg-green-700  text-white font-bold px-12 mt-8 py-2 rounded focus:outline-none shadow hover:bg-blue-700 transition-colors" >Try Offers</button>
+                <button onClick={()=>{navigate('/offers')}}  className="bg-green-700  text-white font-bold px-12 mt-8 py-2 rounded focus:outline-none shadow hover:bg-blue-700 transition-colors" >Try Offers</button>
                 </div>
             </div>
           </div>

@@ -116,6 +116,30 @@ const walletDetails = async()=>{
         console.log(error.message);
     }
 }
+const chat = async()=>{
+    try {
+        const response = await userAxiosInstance.get(`chat`)
+        return response
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+const chatSave = async(data)=>{
+    try {
+        const response = await userAxiosInstance.post(`chatSave`,data)
+        return response
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+const socketCall = async(data)=>{
+    try {
+        const response = await userAxiosInstance.post(`socket`,data)
+        return response
+    } catch (error) {
+        console.log(error.message);
+    }
+} 
 
 export{
     otpGenerate,
@@ -130,6 +154,9 @@ export{
     listCoupons,
     cancelBooking,
     tariffPage,
-    walletDetails
+    walletDetails,
+    chat,
+    chatSave,
+    socketCall
 
 }

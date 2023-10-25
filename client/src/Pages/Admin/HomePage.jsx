@@ -13,7 +13,7 @@ import { useEffect } from "react";
 import Loading from '../../Component/Loading/loading'
 import Sales from "../../Component/Admin/Sales";
 import Coupon from "../../Component/Admin/Coupon";
-
+import DashBoard from "../../Component/Admin/dashBoard";
 import {
   MenuFoldOutlined,
   FrownOutlined,
@@ -212,7 +212,7 @@ const HomePage = () => {
             {(() => {
               switch (selectedKey) {
                 case "1":
-                  return <h1>Admin Dashboard</h1>;
+                  return <DashBoard/>;
                 case "2":
                   return <Request sendDataToParent={receiveDataFromChild} />;
                 case "3":

@@ -94,9 +94,9 @@ const onClose = () => {
               
    
           <div className="w-2/3 h-full flex flex-col">
-            <div className="w-full h-26 flex flex-col justify-center items-center font-mono font-bold text-2xl pb-10">
+            <div className="w-full  flex flex-col justify-center items-center font-mono font-bold text-2xl pb-10">
               <h1>Bookings</h1>
-              <div className='w-full flex justify-around font-light  text-sm pt-3 '><div className='bg-orange-200 rounded shadow animate-pulse animate-infinite' onClick={()=>{HandleOrder("perOrder")}}>PreOrders</div><div className='bg-green-200 rounded shadow animate-pulse animate-infinite' onClick={()=>{HandleOrder("ongoing")}}>Ongoing Order</div><div className='bg-red-300 rounded shadow animate-pulse animate-infinite' onClick={()=>{HandleOrder("cancel")}}>cancel orders</div><div className='bg-green-800 rounded shadow animate-pulse animate-infinite text-white' onClick={()=>{HandleOrder("complete")}}>complete orders</div> <span className='font-mono font-bold'>Total orders:{booking.length}</span></div>
+              <div className='w-full flex justify-around font-light  text-sm  '><div className='bg-orange-300 hover:bg-orange-800 rounded-full text-white font-bold shadow w-[100px] flex justify-center items-center ' onClick={()=>{HandleOrder("perOrder")}}>PreOrders <br /> upComing</div><div className='bg-green-300 hover:bg-green-800 px-2  text-white  rounded-full font-bold shadow flex items-center ' onClick={()=>{HandleOrder("ongoing")}}>Ongoing Order</div><div className='bg-red-500 hover:bg-red-800 flex items-center font-bold p-2 text-white rounded-full shadow ' onClick={()=>{HandleOrder("cancel")}}>cancel orders</div><div className='bg-green-600 p-2 flex items-center  font-bold rounded-full shadow  text-white hover:bg-green-800' onClick={()=>{HandleOrder("complete")}}>complete orders</div> <span className='font-mono font-bold ' >Total orders:{booking.length}</span></div>
             </div>
             {bookingDatas.length > 0 ? (
               bookingDatas.map((data, index) => (

@@ -4,10 +4,11 @@ import Footer from "../../Component/Partner/footer";
 import ChatPartnerPage from '../../Component/Partner/ChatPartner'
 
 function BookingPage() {
+  const targetUserId = '123';
   return (
     <Fragment>
           <Navbar />
-           <ChatPartnerPage/>
+           <ChatPartnerPage targetUserId={targetUserId} />
           <Footer />
     </Fragment>
   )

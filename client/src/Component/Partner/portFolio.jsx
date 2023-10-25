@@ -26,10 +26,10 @@ function PortFolio() {
         const running = data.filter((value)=>{ return value.bikeStatus=="booked"})
         const cancelOrder = data.filter((value)=>{ return value.bikeStatus == "canceled"})
         const helmetCount = completeCount.reduce((total, curr) => total + curr.helmet, 0);
-        const currentProfit = completeCount.reduce((total,curr) => total + curr.totalAmount, 0)
-        const runningProfit = running.reduce((total,curr) => {total + curr.totalAmount},0)
-        const helmetProfit = completeCount.reduce((total,curr) => total + curr.helmet,0)
-        const total = currentProfit+helmetProfit*50+runningProfit;
+        const currentProfit = completeCount.reduce((total,curr) => total + curr.totalAmount, 0) ?? 0
+        const runningProfit = running.reduce((total,curr) => {total + curr.totalAmount},0) ?? 0
+        const helmetProfit = completeCount.reduce((total,curr) => total + curr.helmet,0) ?? 0
+        const total = currentProfit+helmetProfit*50+runningProfit ?? 0
         const advance1 = completeCount.reduce((total, curr) => total + curr.deposit, 0);
         const advance2 = running.reduce((total, curr) => total + curr.deposit, 0);
         const advance = advance1+advance2
@@ -96,7 +96,7 @@ function PortFolio() {
             </div>
             <div className="flex w-full h-14 justify-around items-center text-2xl" >
               <div className="w-1/2 h-full flex justify-center items-center"><h1>Total calculated Amount</h1></div> 
-              <div className="w-1/2 h-full flex justify-center items-center "><span><i className="icon  rupee sign "></i>{protfolio.total}-{protfolio.totalAdvance}</span></div>
+              <div className="w-1/2 h-full flex justify-center items-center "><span><i className="icon  rupee sign "></i>{protfolio.total }-{protfolio.totalAdvance}</span></div>
           
           </div>
           <div className="w-full h-12 flex justify-center items-center">    <button className="w-2/3 h-2/3 shadow rounded bg-green-400">Withdraw</button></div>

@@ -1,8 +1,9 @@
-import{useEffect,useState} from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Popover, Space } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from "react-redux";
 import { userLogOut } from '../../../Redux/storeSlices/userAuth';
+import PropTypes from 'prop-types'; // Import PropTypes
 import "../ANT/ANT.css"
 
 const App = (props) => {
@@ -103,3 +104,9 @@ const [popup,setPopup] = useState(false)
 };
 
 export default App;
+App.propTypes = {
+  data: PropTypes.shape({
+    name: PropTypes.string,
+    find: PropTypes.bool,
+  }),
+};

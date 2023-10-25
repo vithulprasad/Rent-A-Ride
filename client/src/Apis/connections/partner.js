@@ -111,6 +111,32 @@ const completeBooking = async(id)=>{
         console.log(error.message);
     }
 }
+const chat = async()=>{
+    try {
+        const response = await partnerAxiosInstance.get(`chat`);
+        return response
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const chatSave = async(data)=>{
+    try {
+        const response = await partnerAxiosInstance.post(`chatSave`,data);
+        return response
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+const socketCall = async(data)=>{
+    try {
+        
+        const response = await partnerAxiosInstance.post(`socket`,data);
+        return response
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 export{
     partnerLogin,
     PartnerDetails,
@@ -124,6 +150,9 @@ export{
     partnerBookings,
     unlist,
     list,
-    completeBooking
+    completeBooking,
+    chat,
+    chatSave,
+    socketCall
  
 }

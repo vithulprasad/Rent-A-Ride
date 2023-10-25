@@ -9,6 +9,8 @@ import booking from './storeSlices/bookingSlice'
 import partnerBooking from './storeSlices/partnerBooking'
 import bookingAdmin from './storeSlices/AdminBooking'
 import smallAmount from './storeSlices/smallAmount'
+import chat from './storeSlices/Chat'
+import ChatSingle from './storeSlices/ChatSingle'
 const rootReducer = combineReducers({
      userAuth:userAuth,
      AdminAuth:AdminAuth,
@@ -18,7 +20,9 @@ const rootReducer = combineReducers({
      booking:booking,
      partnerBooking:partnerBooking,
      AdminBooking:bookingAdmin,
-     smallAmount:smallAmount
+     smallAmount:smallAmount,
+     chat:chat,
+     ChatSingle:ChatSingle
 })
 const store = configureStore({
     reducer: rootReducer

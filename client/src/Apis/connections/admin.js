@@ -115,6 +115,31 @@ const singleOrderDetails =async(id)=>{
         console.log(error.message);
     }
 }
+const dashboardData = async()=>{
+    try {
+        const response = await adminAxiosInstance.get(`dashboardData`)
+        return response;
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const dashboardChartOrder = async()=>{
+    try {
+        const response = await adminAxiosInstance.get(`dashboardChartOrder`)
+        return response;
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+const dashboardChartPartner = async()=>{
+    try {
+        const response = await adminAxiosInstance.get(`dashboardChartPartner`)
+        return response;
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 export{
     login,
     bikeDetails,
@@ -129,5 +154,8 @@ export{
     addCoupon,
     getCoupons,
     bookingAdmin,
-    singleOrderDetails
+    singleOrderDetails,
+    dashboardData,
+    dashboardChartOrder,
+    dashboardChartPartner
 }

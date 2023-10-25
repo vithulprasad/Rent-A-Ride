@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
 
 function Sales() {
   const [open, setOpen] = useState(false);
-  const [placement, setPlacement] = useState(true);
+
   const [bookings, setBookings] = useState([]);
   const [total, setTotal] = useState(0);
   const [date1, setDate1] = useState('');
@@ -182,13 +182,9 @@ function Sales() {
   const onClose = () => {
     setOpen(false);
   };
-  const handleGeneratePDF = () => {
-    setPlacement(true)
-  };
 
-  const handleXml = ()=>{
-   console.log("xml");
-  }
+
+  
 
   return (
     <div className="w-full h-700 font-mono font-bold">
