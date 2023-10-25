@@ -26,6 +26,7 @@
 
   app.use(cors({
     origin: process.env.CLIENT,
+    methods: ["GET", "POST"],
   }));
   const PORT = 4000;
   const server=app.listen(PORT, () => {
