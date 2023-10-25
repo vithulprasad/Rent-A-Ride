@@ -104,7 +104,7 @@ exports.otpGenerate = async (req, res) => {
       transporter.sendMail(mailOptions, (error, info) => {
         console.log("entering into the last stage of otp");
         if (error) {
-          console.error(error);
+          console.error(error,'this is the error of otp');
         } else {
           console.log("Email sent: " + info.response);
           console.log("sending response");
