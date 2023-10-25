@@ -126,12 +126,7 @@ function Login() {
             </div>
 
             <div className="flex justify-between items-center mt-10">
-              <a
-                href="#"
-                className="inline-block text-blue-500 hover:text-blue-800 hover:underline"
-              >
-                Forget password
-              </a>
+           
               <a
                 onClick={()=>{navigate('/admin/login')}}
                 className="inline-block text-blue-500 hover:text-blue-800 hover:underline"
