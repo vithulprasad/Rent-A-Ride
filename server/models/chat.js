@@ -1,21 +1,48 @@
 const mongoose= require("mongoose");
 
-const Chat = mongoose.Schema({
-   user:{
+const chat = mongoose.Schema({
+   partner:{
     type:String,
      required:true,
-     ref:'user',
    },
-   partner:{
+   userName:{
      type:String,
-     required:true,
-     ref:"partner",
+     required:true
    },
-   chat:[{
-          user:{type:String,default:""},
-          partner:{type:String,default:""}
-         }]
- 
+   userNameLast:{
+    type:String,
+    required:true
+  },
+   userImage:{
+    type:String,
+    default:''
+  },
+  partnerName:{
+    type:String,
+    required:true
+  },
+  partnerImage:{
+    type:String,
+    default:''
+  },
+  user:{
+    type:String,
+    required:true
+  },
+
+   message:[{
+      user:{type:String,default:""},
+      partner:{type:String,default:""},
+      date:{type:Date}
+   }],
+   lastMessage:{
+    type:String,
+    default:''
+   },
+   date:{
+    type:Date,
+    require:true
+   }
 })
 
-module.exports = mongoose.model("Chat",Chat)
+module.exports = mongoose.model("chat",chat)

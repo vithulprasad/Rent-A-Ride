@@ -6,10 +6,9 @@
   const admin_route =require('./Router/Admin')
   const user_route = require('./Router/User');
   const partner_route = require('./Router/Partner');
-  const user = require('../server/socket/user')
-  const partner = require('../server/socket/partner')
+
   const mongoose = require('mongoose')
-  const http = require('http');
+
   const { Server } = require("socket.io")
 
   mongoose.connect(process.env.MONGO,{
@@ -25,7 +24,9 @@
 
 
 
-  app.use(cors());
+  app.use(cors({
+    origin: process.env.CLIENT,
+  }));
   const PORT = 4000;
   const server=app.listen(PORT, () => {
     console.log(`SERVER RUNNING ON ${PORT} `.blue.bold);
@@ -34,7 +35,7 @@
  
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:3000", // Replace with your front-end URL
+      origin: process.env.CLIENT, // Replace with your front-end URL
       methods: ["GET", "POST"],
     }
   });
@@ -76,31 +77,8 @@
     
     
     io.on('connection', (socket) => {
-
-
-      socket.on('dataForward',async(data)=>{
-        const  datas = await user.respond(data)
-        socket.emit("data",datas)
-      })
-     
-      
-      socket.on('sent_message', async(data) => {
-        const value =  await user.saveAndRespond(data)
-        socket.emit('responseUser',value)
-      });
-
-
-
-      socket.on("findPartner",async(data)=>{
-        console.log(data);
-          const value = await partner.findPartner(data)
-          socket.emit("findPartnerData",value)
-      })
-
-  
-      socket.on('userOneTextFind',async(data)=>{
-        const value = await partner.findUserChat(data)
-        socket.emit('usersChat',value)
-      })
-    
+         socket.on('sentMessage',async()=>{            
+            io.emit('receiveMessage')
+         })
     });
+    

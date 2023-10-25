@@ -361,3 +361,76 @@ exports.singleOrderDetails = async(req,res)=>{
       res.status(200).json({success:false});
    }
 }
+
+exports.dashboardData =async(req,res)=>{
+   try {
+      const users = await user.find()
+      const partners = await partner.find()
+      const bookings = await booking.find()
+      const complete_transaction = bookings.reduce((acc, curr) => acc + curr.totalAmount, 0);
+      
+      res.status(200).json({success:true,user:users.length,partners:partners.length,bookings:bookings.length,complete_transaction:complete_transaction,})
+   } catch (error) {
+      console.log(error.message);
+      res.status(200).json({success:false});
+   }
+}
+
+exports.dashboardChartOrder =async(req,res)=>{
+   try {
+      const bookings = await booking.aggregate([{
+         $group:{
+            _id:"$bikeStatus" ,
+            count: { $sum: 1 }}
+      },{
+         $project:{
+            _id: 0,
+            name: "$_id",
+            count: 1
+          }
+      }])
+ 
+      res.status(200).json({success:true,order:bookings})
+   } catch (error) {
+      console.log(error.message);
+      res.status(200).json({success:false});
+   }
+}
+exports.dashboardChartPartner =async(req,res)=>{
+   try {
+      const bookings = await booking.aggregate([
+         {
+           $group: {
+             _id: "$partner",
+             count: { $sum: 1 }
+           }
+         },
+         {
+           $project: {
+             _id: 0,
+             partner: "$_id",
+             count: 1
+           }
+         },
+         {
+           $sort: {
+             count: -1 // Sort in descending order based on the "count" field
+           }
+         },
+         {
+           $limit: 4
+         }
+       ]);
+       
+       const userAndPartner = await booking.find().populate('partner').populate('userId')
+ 
+       
+ 
+       
+         console.log(bookings,'-----------------------------');
+      res.status(200).json({success:true,order:bookings,orders:userAndPartner})
+   } catch (error) {
+      console.log(error.message);
+      res.status(200).json({success:false});
+   }
+}

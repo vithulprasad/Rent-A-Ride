@@ -28,4 +28,7 @@ user_route.get('/paymentDetails',Auth.userAuth,Auth.IsBlock,userController.payme
 user_route.post('/applyCoupon',Auth.userAuth,Auth.IsBlock,details.haveDetails,userController.applyCoupon)
 user_route.get('/cancelBooking',Auth.userAuth,Auth.IsBlock,details.haveDetails,userController.cancelBooking)
 user_route.get('/walletDetails',Auth.userAuth,Auth.IsBlock,details.haveDetails,userController.walletDetails)
+user_route.get('/chat',Auth.userAuth,Auth.IsBlock,details.haveDetails,userController.chat)
+user_route.post('/chatSave',Auth.userAuth,Auth.IsBlock,details.haveDetails,userController.chatSave)
+user_route.post('/socket',Auth.userAuth,Auth.IsBlock,details.haveDetails,userController.socket)
 module.exports = user_route

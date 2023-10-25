@@ -4,6 +4,7 @@ const partner = require("../models/Partner");
 const bikes = require("../models/BikeModel");
 const booking = require("../models/booking");
 const users = require("../models/Users")
+const chat = require('../models/chat')
 exports.login = async (req, res) => {
   try {
     console.log(req.body.data);
@@ -217,7 +218,7 @@ exports.partnerEdit = async (req, res) => {
 };
 exports.locationDetails = async (req, res) => {
   try {
-    console.log("entering to location details...............");
+
     const token = req.query.token;
     const findPartner = jwt.verify(token, process.env.TOKENSECRET);
     const partnerId = findPartner.id;
@@ -235,7 +236,7 @@ exports.locationDetails = async (req, res) => {
 };
 
 exports.bikeDelete = async (req, res) => {
-    console.log("entering to Bike delete...............");
+    
   try {
     const id = req.query.id;
     await bikes
@@ -255,7 +256,7 @@ exports.bikeDelete = async (req, res) => {
 };
 exports.editBike = async (req, res) => {
   try {
-    console.log(req.body.data ,'entering to bike edit');
+
     const { name, brand, Rent, category, id, cc, PlateNumber } = req.body.data;
 
     await bikes
@@ -292,7 +293,7 @@ exports.partnerBookings=async(req,res)=>{
     const data = await booking.find({partner:partnerId})
     .populate("userId")
     .populate("bike")
-    console.log(data,'partner details ',);
+
     res.status(200).json({ success: true ,data:data});
   } catch (error) {
     console.log(error.message);
@@ -322,7 +323,7 @@ exports.list=async(req,res)=>{
       if(check.isBooked==true){
         res.status(200).json({ success: true });
       }else{
-        const findBike = await bikes.findOneAndUpdate({_id:id},{$set:{Listed:false,available:true}})
+         await bikes.findOneAndUpdate({_id:id},{$set:{Listed:false,available:true}})
         res.status(200).json({ success: true});
       }
     
@@ -336,12 +337,19 @@ exports.completeBooking = async (req, res) => {
   try {
     const id = req.query.id;
     const bookingNow = await booking.findOne({ _id: id });
-    const bikeId = booking.bike;
-
+    const bikeId = bookingNow.bike;
+    console.log(bikeId,'-------',bookingNow);
     const booking1 = await booking.findOneAndUpdate({ _id: id }, { $set: { bikeStatus: "complete" } });
     const bikes1 = await bikes.findOneAndUpdate({ _id: bikeId }, { $set: { isBooked: false } });
     const users1 = await users.findOneAndUpdate({ _id: bookingNow.userId }, { $inc: { wallet: bookingNow.totalAmount } });
     const users2 = await users.findOneAndUpdate({ _id: bookingNow.userId }, { $push: { walletHistory: id} });
+
+
+    // const Chat = new chat({
+    //      partner:,
+    //      user:bookingNow.userId 
+    // })
+    
     await users.findOneAndUpdate({ _id: bookingNow.userId }, { $push: { walletDate: Date.now()} });
 
     // Create an array of promises and pass it to Promise.all
@@ -358,5 +366,62 @@ exports.completeBooking = async (req, res) => {
   } catch (error) {
     console.log(error.message, 'error from booking complete');
     res.status(200).json({ success: false });
+  }
+}
+
+
+exports.chat =async(req,res)=>{
+  try {
+    const id1 = req.id
+
+    const communication = await chat.aggregate ([{
+      $match: {
+        partner:id1
+      }
+    }])
+    res.status(200).json({success:true,communication:communication})
+  } catch (error) {
+    console.log(error.message, 'error from booking complete----');
+    res.status(200).json({ success: false });
+  }
+}
+
+exports.chatSave = async(req,res)=>{
+  try {
+    console.log("comming");
+    const user = req.body.user;
+    const partner = req.id;
+    const message = req.body.message
+    const data = {
+      user:'',
+      partner:message,
+      date:Date.now()
+    }
+    await chat.findOneAndUpdate(
+      { user: user, partner: partner },
+      {
+        $push: { message: data }, 
+        $set: { lastMessage: message } 
+      }
+    );
+    
+    const Chat = await chat.findOne({user:user,partner:partner})
+    res.status(200).json({success:true,chat:Chat})
+  } catch (error) {
+    console.log(error.message)
+    res.status(200).json({ success: false,message:"internal server error"});
+  }
+}
+
+exports.socket =async(req,res)=>{
+  try {
+    const partner = req.body.partner
+    const user =req.body.user
+    console.log(partner,user ,'----partner');
+    const Chat = await chat.findOne({partner:partner,user:user})
+    res.status(200).json({success:true,chat:Chat})
+  } catch (error) {
+    console.log(error.message)
+    res.status(200).json({ success: false,message:"internal server error"});
   }
 }

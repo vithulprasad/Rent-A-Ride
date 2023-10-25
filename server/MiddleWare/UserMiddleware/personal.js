@@ -3,10 +3,10 @@ const userModel = require("../../models/Users")
 
 exports.haveDetails =async(req,res,next)=>{
    try {
-    console.log("coming---------------");
+
     const id = req.id;
     const findUser = await userModel.findOne({_id:id})
-    console.log(findUser,'-------');
+  
       if(findUser.Profile==""){
         console.log("no profile found");
         res.status(200).json({userDetails:"no_profile"})

@@ -9,6 +9,7 @@ const BikeModel = require("../models/BikeModel");
 const stripe = require('stripe')(process.env.STRIPID);
 const booking = require('../models/booking')
 const couponModel = require('../models/Coupen')
+const chat = require('../models/chat')
 //---------------------------comparing otp and verify the email---------------------------//
 exports.otp = async (req, res) => {
   try {
@@ -539,9 +540,9 @@ exports.paymentSuccess=async(req,res)=>{
       
    
        const userFirstOrder = await booking.findOne({userId:req.id}).sort({purchaseDate:-1}).limit(1)
-       console.log(userFirstOrder.id);
-       const findBooking = await booking.findOne({_id:userFirstOrder.id})
-   
+       console.log(userFirstOrder);
+       const findBooking = await booking.findOne({_id:userFirstOrder.id}).populate('userId').populate('partner')
+  
     
 
        const sessionId = findBooking.bookingId;
@@ -552,7 +553,7 @@ exports.paymentSuccess=async(req,res)=>{
            return;
          }
          if (session.payment_status === 'paid') {
-           console.log('Payment was successful');
+      
        
           
            const payment=async()=>{
@@ -565,9 +566,26 @@ exports.paymentSuccess=async(req,res)=>{
                 couponAdd: findBooking.couponId=="" ||  findBooking.couponId=="0" ? false : true
               }
             })
+
+            
+            const Chat = new chat({
+              partner:userFirstOrder.partner,
+              user:userFirstOrder.userId,
+              userName:findBooking.userId.firstName,
+              userNameLast:findBooking.userId.lastName,
+              userImage:findBooking.userId.Profile,
+              partnerName:findBooking.partner.name,
+              partnerImage:findBooking.partner.image,
+              date:Date.now()
+             })
+             const isChatSaved = await chat.findOne({partner:userFirstOrder.partner,user:userFirstOrder.userId})
+                
+                 isChatSaved ? console.log("user is find") : await Chat.save();
+          
             await BikeModel.findOneAndUpdate({_id:findBooking.bike},{$set:{isBooked:true}})
            }
            payment()
+         
          } else {
             const payment = async()=>{
               await booking.findOneAndUpdate({_id:userFirstOrder.id},{
@@ -677,11 +695,11 @@ exports.cancelBooking=async(req,res)=>{
     const findBike= await booking.findOne({_id:id});
     const findUser = await users.findOne({_id:req.id})
     const totalAmount = findBike.totalAmount+findUser.wallet
-  const updateBooking = await booking.findOneAndUpdate({_id:id},{$set:{bikeStatus:"canceled"}})
-  const updateBike =  await BikeModel.findOneAndUpdate({_id:findBike.bike},{$set:{isBooked:false}})
-  const updateWallet = await users.findOneAndUpdate({_id:req.id},{$inc:{wallet:totalAmount}})
-  await users.findOneAndUpdate({_id:req.id},{$push:{walletHistory:id}})
-  await users.findOneAndUpdate({_id:req.id},{$push:{walletDate:Date.now()}})
+    const updateBooking = await booking.findOneAndUpdate({_id:id},{$set:{bikeStatus:"canceled"}})
+    const updateBike =  await BikeModel.findOneAndUpdate({_id:findBike.bike},{$set:{isBooked:false}})
+    const updateWallet = await users.findOneAndUpdate({_id:req.id},{$inc:{wallet:totalAmount}})
+    await users.findOneAndUpdate({_id:req.id},{$push:{walletHistory:id}})
+    await users.findOneAndUpdate({_id:req.id},{$push:{walletDate:Date.now()}})
     Promise.all(updateBooking,updateBike,updateWallet)
     .then(()=>{
       res.status(200).json({success:true})
@@ -709,10 +727,64 @@ exports.tariffPage=async(req,res)=>{
 
 exports.walletDetails =async(req,res)=>{
   try {
-    console.log("entertig");
    const details=await users.findOne({ _id: req.id }).populate('walletHistory') 
-      console.log(details);
       res.status(200).json({success:true,details:details})
+  } catch (error) {
+    console.log(error.message)
+    res.status(200).json({ success: false,message:"internal server error"});
+  }
+}
+
+
+exports.chat=async(req,res)=>{
+  try {
+    console.log("entering to the chat user");
+    const id1 = req.id
+   
+    const communication = await chat.aggregate([{$match:{user:id1}}])
+    console.log(communication,'----ddddd-----');
+
+    res.status(200).json({success:true,communication:communication})
+  } catch (error) {
+    console.log(error.message)
+    res.status(200).json({ success: false,message:"internal server error"});
+  }
+}
+
+exports.chatSave = async(req,res)=>{
+  try {
+   
+    const partner = req.body.partner;
+    const user = req.id;
+    const message = req.body.message
+    const data = {
+      user:message,
+      partner:'',
+      date:Date.now()
+    }
+    await chat.findOneAndUpdate(
+      { user: user, partner: partner },
+      {
+        $push: { message: data }, 
+        $set: { lastMessage: message } 
+      }
+    );
+    const Chat = await chat.findOne({user:user,partner:partner})
+    res.status(200).json({success:true,chat:Chat})
+  } catch (error) {
+    console.log(error.message)
+    res.status(200).json({ success: false,message:"internal server error"});
+  }
+}
+
+exports.socket =async(req,res)=>{
+  try {
+  
+    const partner = req.body.partner
+    const user =req.body.user
+     console.log(partner,user ,'----user');
+    const Chat = await chat.findOne({partner:partner,user:user})
+    res.status(200).json({success:true,chat:Chat})
   } catch (error) {
     console.log(error.message)
     res.status(200).json({ success: false,message:"internal server error"});

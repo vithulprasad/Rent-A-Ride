@@ -20,5 +20,8 @@ admin_route.post('/addCoupon',Auth.AdminAuth,adminController.addCoupon)
 admin_route.get('/getCoupons',Auth.AdminAuth,adminController.couponDetails)
 admin_route.get('/bookingAdmin',Auth.AdminAuth,adminController.bookingAdmin)
 admin_route.get('/singleOrderDetails',Auth.AdminAuth,adminController.singleOrderDetails)
+admin_route.get('/dashboardData',Auth.AdminAuth,adminController.dashboardData)
+admin_route.get('/dashboardChartOrder',Auth.AdminAuth,adminController.dashboardChartOrder)
+admin_route.get('/dashboardChartPartner',Auth.AdminAuth,adminController.dashboardChartPartner)
 
 module.exports = admin_route;
