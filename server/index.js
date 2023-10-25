@@ -36,7 +36,7 @@
  
   const io = new Server(server, {
     cors: {
-      origin: process.env.CLIENT, // Replace with your front-end URL
+      origin: "https://rent-a-ride-ten.vercel.app", // Replace with your front-end URL
       methods: ["GET", "POST"],
     }
   });
