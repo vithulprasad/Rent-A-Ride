@@ -1,14 +1,13 @@
+require('dotenv').config();
   const express = require("express");
   const colors = require("colors");
+  const http = require('http')
   const app = express();
-  require('dotenv').config();
   const cors = require("cors");
   const admin_route =require('./Router/Admin')
   const user_route = require('./Router/User');
   const partner_route = require('./Router/Partner');
-
   const mongoose = require('mongoose')
-
   const { Server } = require("socket.io")
 
   mongoose.connect(process.env.MONGO,{
@@ -28,9 +27,10 @@
     origin: process.env.CLIENT,
     methods: ["GET", "POST"],
   }));
-  const PORT = 4000;
-  const server=app.listen(PORT, () => {
-    console.log(`SERVER RUNNING ON ${PORT} `.blue.bold);
+  const port = process.env.PORT 
+  
+  const server= app.listen(port, () => {
+    console.log(`SERVER RUNNING ON ${port} `.blue.bold);
   });
 
  
@@ -41,37 +41,18 @@
     }
   });
  
-  
-
 
   app.use(express.urlencoded({ extended: false }));
   app.use(express.json());
 
 
 
-  // app.use(
-  //     cors({
-  //       origin: "http://localhost:3000/",
-  //       methods: ["GET", "POST"],
-  //       credentials: true,
-  //     })
-  //   );
-  //   app.options(
-  //     "*",
-  //     cors({
-  //       allowedHeaders: ["Content-Type"],
-  //     })
-  //   );
-
-    // app.use(cors(corsOpts));
-
-
+ 
     console.log("starting");
     app.use("/",user_route);
     app.use("/admin", admin_route);
     app.use('/partner', partner_route);
 
-    // communication connections
 
 
 
@@ -83,3 +64,4 @@
          })
     });
     
+

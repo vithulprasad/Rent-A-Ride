@@ -10,7 +10,8 @@ function Chat() {
   const [chatPerson, setChatPerson] = useState([]);
   const [select, setSelect] = useState(-1);
   const [conversation, setConversation] = useState({});
-  const [message, setMessage] = useState("");
+  // const [message, setMessage] = useState("");
+  const messageRef = useRef()
   const [loading,setLoading] = useState(false)
   const changeRef = useRef(null); // Ref attached to the chat container
   const location = useNavigate();
@@ -66,11 +67,11 @@ function Chat() {
   const handleMessage = () => {
     setLoading(true)
     if (conversation.partner) {
-      if (message !== "") {
+      if (messageRef.current.value !== "") {
         const partner = conversation.partner;
         const data = {
           partner: partner,
-          message: message,
+          message: messageRef.current.value,
         };
         chatSave(data)
           .then((res) => {
@@ -78,7 +79,7 @@ function Chat() {
               const data = res.data.chat;
               setConversation(data);
               socket.emit('sentMessage');
-              setMessage('');
+              messageRef.current.value='';
               setLoading(false)
             }
           })
@@ -176,7 +177,7 @@ function Chat() {
         </div>
         <div className="w-full h-[10%] flex">
           <div className="w-[80%] h-full flex items-center" >
-            <input placeholder="Enter message 👉"  onChange={(e) => { setMessage(e.target.value) }} value={message} type="text" className="w-full text-lg font-mono pl-3 h-2/3 ml-2 border border-black rounded-md" />
+            <input placeholder="Enter message 👉"  ref={messageRef} type="text" className="w-full text-lg font-mono pl-3 h-2/3 ml-2 border border-black rounded-md" />
           </div>
           <div className="w-[20%] h-full flex items-center p-2" >
             <div onClick={handleMessage} className="h-full w-16 bg-green-400 rounded-full flex justify-center items-center" style={{ boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }}>
